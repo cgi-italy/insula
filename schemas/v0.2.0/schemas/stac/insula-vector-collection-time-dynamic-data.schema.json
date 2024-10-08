@@ -1,0 +1,95 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://cgi-italy.github.io/insula/schemas/schemas/v0.2.0/stac/insula-vector-collection-time-dynamic-data.schema.json",
+  "title": "Vector collection time dynamic data",
+  "description": "Definition of a vector collection time dynamic data. Allows to perform time series on one or more attribute, for which the data is stored in an external collection. All numeric properties of the external collection will be considered as time dynamic attributes.",
+  "type": "object",
+  "examples": [
+    {
+      "nameProperty": "idrometer_name",
+      "dataSources": [
+        {
+          "foreignKey": {
+            "sourceAttribute": "id",
+            "targetCollection": "idrometer_levels",
+            "targetAttribute": "idrometer_id"
+          },
+          "targetTimeAttribute": "obs_time"
+        }
+      ]
+    }
+  ],
+  "properties": {
+    "nameAttribute": {
+      "title": "Source property name attribute",
+      "description": "The attribute to use as name (e.g. used in time series location selection)",
+      "type": "string"
+    },
+    "dataSources": {
+      "title": "Time dynamic data sources",
+      "description": "The list of tyme dynamic attributes data sources",
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/timeDynamicDataSource"
+      }
+    },
+    "targetDimensionAttributes": {
+      "title": "Target dimension attributes",
+      "description": "Define the target collection attributes to use as dimensions. Dimensions should be defined in the featureAttributes of the target collections specificied in the dataSources. All data sources should share the same definition.",
+      "type": "array",
+      "item": "string"
+    }
+  },
+  "required": [
+    "nameProperty",
+    "dataSources"
+  ],
+  "$defs": {
+    "timeDynamicDataSource": {
+      "title": "Vector time dynamic data source",
+      "description": "Vector time dynamic data source",
+      "type": "object",
+      "properties": {
+        "foreignKey": {
+          "$ref": "#/$defs/timeDynamicDataSourceForeignKey"
+        },
+        "targetTimeAttribute": {
+          "title": "Target collection time attribute",
+          "description": "The target collection attribute to be used as time. Shall be of 'date' type",
+          "type": "string"
+        }
+      },
+      "required": [
+        "foreignKey",
+        "targetTimeAttribute"
+      ]
+    },
+    "timeDynamicDataSourceForeignKey": {
+      "title": "Time dynamic data foreign key",
+      "description": "Define the relation between the source and the target collection. In SQL terms: FOREIGN KEY(sourceAttribute) REFERENCE targetCollection(targetAttribute)",
+      "type": "object",
+      "properties": {
+        "sourceAttribute": {
+          "title": "Source property",
+          "description": "The id of the attribute in the source collection to use as foreign key",
+          "type": "string"
+        },
+        "targetCollection": {
+          "title": "Target collection",
+          "description": "The ID of the collection containing the time dynamic data",
+          "type": "string"
+        },
+        "targetAttribute": {
+          "title": "Target attribute",
+          "description": "The ID of the attribute referenced in the target collection",
+          "type": "string"
+        }
+      },
+      "required": [
+        "sourceAttribute",
+        "targetCollection",
+        "targetAttribute"
+      ]
+    }
+  }
+}

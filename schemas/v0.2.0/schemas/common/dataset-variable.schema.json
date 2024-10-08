@@ -1,0 +1,49 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://cgi-italy.github.io/insula/schemas/schemas/v0.2.0/common/dataset-variable.schema.json",
+  "title": "Dataset variable definition",
+  "description": "Definition of a dataset variable",
+  "type": "object",
+  "examples": [
+    {
+      "id": "height",
+      "name": "Height",
+      "quantity": {
+        "id": "altitude_m",
+        "name": "Altitude",
+        "units": "m"
+      },
+      "domain": {
+        "min": 0,
+        "max": 10000
+      }
+    }
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "title": "Variable ID",
+      "description": "The id of the variable"
+    },
+    "name": {
+      "type": "string",
+      "title": "Variable name",
+      "description": "The name of the variable"
+    },
+    "description": {
+      "type": "string",
+      "title": "Variable description",
+      "description": "A description for the variable"
+    },
+    "quantity": {
+      "$ref": "./measured-quantity.schema.json"
+    },
+    "domain": {
+      "$ref": "./dataset-variable-domain.schema.json"
+    }
+  },
+  "required": [
+    "id",
+    "name"
+  ]
+}
