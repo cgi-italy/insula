@@ -1,0 +1,1 @@
+{"$schema":"https://json-schema.org/draft/2020-12/schema","$id":"https://cgi-italy.github.io/insula/schemas/v0.2.6/apps/insula-perception-datasets-config.schema.json","title":"Insula Perception datasets config","description":"Insula Perception datasets config","type":"array","items":{"$ref":"./insula-json-datasets-group.schema.json"}}
