@@ -1,0 +1,70 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://cgi-italy.github.io/insula/schemas/v0.2.0/common/platform-collection.schema.json",
+  "title": "Platform collection",
+  "description": "Platform collection metadata",
+  "type": "object",
+  "oneOf": [
+    {
+      "$ref": "#/$defs/platformRasterCollection"
+    },
+    {
+      "$ref": "#/$defs/platformVectorCollection"
+    }
+  ],
+  "unevaluatedProperties": false,
+  "$defs": {
+    "platformRasterCollection": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/platformRasterCollectionTypeObject"
+        },
+        {
+          "$ref": "./raster-collection.schema.json"
+        }
+      ]
+    },
+    "platformVectorCollection": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/platformVectorCollectionTypeObject"
+        },
+        {
+          "$ref": "./vector-collection.schema.json"
+        }
+      ]
+    },
+    "platformRasterCollectionTypeObject": {
+      "type": "object",
+      "title": "Raster collection tag",
+      "description": "The raster collection tag",
+      "properties": {
+        "type": {
+          "type": "string",
+          "title": "Raster collection type constant",
+          "description": "The raster collection type constant value",
+          "const": "raster"
+        }
+      },
+      "required": [
+        "type"
+      ]
+    },
+    "platformVectorCollectionTypeObject": {
+      "type": "object",
+      "title": "Vector collection tag",
+      "description": "The vector collection tag",
+      "properties": {
+        "type": {
+          "type": "string",
+          "title": "Vector collection type constant",
+          "description": "The vector collection type constant value",
+          "const": "vector"
+        }
+      },
+      "required": [
+        "type"
+      ]
+    }
+  }
+}
