@@ -1,6 +1,6 @@
-- [Current version (v0.2.7)](v0.2.7)
 ## Current version
 
+- [v0.2.7](v0.2.7)
 
 ## Previous versions
 
