@@ -1,0 +1,33 @@
+{
+  "type": "Collection",
+  "stac_extensions": [
+    "{schemaBaseHref}/{schemaVersion}/stac/insula-stac-extension.schema.json"
+  ],
+  "insula:metadata": {
+    "type": "raster",
+    "bands": [
+      {
+        "idx": 1,
+        "name": "NIR Band",
+        "color": "#CC0000",
+        "domain": {
+          "min": 0,
+          "max": 4000,
+          "noData": -1
+        },
+        "quantity": {
+          "id": "reflectance",
+          "name": "Reflectance"
+        },
+        "default": {
+          "colorScale": "turbo",
+          "range": {
+            "min": 0,
+            "max": 3200
+          },
+          "clamp": true
+        }
+      }
+    ]
+  }
+}
