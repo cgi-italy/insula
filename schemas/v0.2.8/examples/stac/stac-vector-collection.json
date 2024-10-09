@@ -1,0 +1,57 @@
+{
+  "type": "Collection",
+  "id": "stac-vector-collection",
+  "title": "Vector collection",
+  "stac_extensions": [
+    "https://insula.earth/schemas/v0.2.8/stac/insula-stac-extension.schema.json"
+  ],
+  "insula:metadata": {
+    "type": "vector",
+    "feautreAttributes": [
+      {
+        "id": "name",
+        "name": "Name",
+        "type": "string",
+        "description": "Entity name",
+        "filterable": true,
+        "sortable": true
+      },
+      {
+        "id": "total",
+        "name": "Total",
+        "type": "number",
+        "filterable": true,
+        "sortable": true
+      },
+      {
+        "id": "class",
+        "name": "Class",
+        "type": "enum",
+        "domain": {
+          "values": [
+            {
+              "value": 1,
+              "label": "First Class"
+            },
+            {
+              "value": 2,
+              "label": "Second Class"
+            }
+          ]
+        },
+        "filterable": true,
+        "sortable": true
+      },
+      {
+        "id": "date",
+        "name": "Date",
+        "type": "date",
+        "domain": {
+          "min": "1928-12-16T00:00:00Z",
+          "max": "1982-03-02T23:59:59Z"
+        }
+      }
+    ],
+    "timeDimensionProperty": "date"
+  }
+}
