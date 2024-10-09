@@ -1,0 +1,53 @@
+[
+  {
+    "id": "test",
+    "name": "test",
+    "datasets": [
+      {
+        "id": "test",
+        "name": "test",
+        "type": "raster",
+        "layer": "mylayer",
+        "bands": [
+          {
+            "name": "NDVI",
+            "quantity": {
+              "id": "ndvi",
+              "name": "NDVI"
+            },
+            "domain": {
+              "min": -1,
+              "max": 1
+            },
+            "color": "green",
+            "default": {
+              "colorScale": "turbo",
+              "range": {
+                "min": 0,
+                "max": 1
+              },
+              "clamp": false
+            }
+          }
+        ]
+      },
+      {
+        "type": "vector",
+        "featureTypeName": "test",
+        "timeDynamicData": {
+          "nameProperty": "idrometer_name",
+          "dataSources": [
+            {
+              "foreignKey": {
+                "sourceAttribute": "id",
+                "targetLayer": "idrometer_levels",
+                "targetAttribute": "idrometer_id"
+              },
+              "targetTimeAttribute": "obs_time"
+            }
+          ]
+        }
+      }
+    ]
+  }
+]
