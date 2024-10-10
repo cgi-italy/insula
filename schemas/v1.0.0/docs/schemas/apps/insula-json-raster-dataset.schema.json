@@ -1,0 +1,55 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://cgi-italy.github.io/insula/schemas/v1.0.0/apps/insula-json-raster-dataset.schema.json",
+  "title": "Insula raster dataset",
+  "description": "Insula JSON raster dataset configuration",
+  "type": "object",
+  "examples": [
+    {
+      "type": "raster",
+      "layer": "mylayer",
+      "bands": [
+        {
+          "name": "NDVI",
+          "quantity": {
+            "id": "ndvi",
+            "name": "NDVI"
+          },
+          "domain": {
+            "min": -1,
+            "max": 1
+          },
+          "color": "green",
+          "default": {
+            "colorScale": "turbo",
+            "range": {
+              "min": 0,
+              "max": 1
+            },
+            "clamp": false
+          }
+        }
+      ]
+    }
+  ],
+  "allOf": [
+    {
+      "$ref": "../common/platform-collection.schema.json#/$defs/platformRasterCollection"
+    },
+    {
+      "type": "object",
+      "title": "Raster layer configuration",
+      "description": "Geoserver raster layer information",
+      "properties": {
+        "layer": {
+          "type": "string",
+          "title": "WMS layer",
+          "description": "The WMS layer name"
+        }
+      },
+      "required": [
+        "layer"
+      ]
+    }
+  ]
+}

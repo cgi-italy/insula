@@ -1,0 +1,211 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://cgi-italy.github.io/insula/schemas/v1.0.0/common/vector-feature-property.schema.json",
+  "title": "Vector feature property",
+  "description": "Definition of a vector feature property",
+  "allOf": [
+    {
+      "$ref": "#/$defs/common"
+    },
+    {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/stringProperty"
+        },
+        {
+          "$ref": "#/$defs/booleanProperty"
+        },
+        {
+          "$ref": "#/$defs/numericProperty"
+        },
+        {
+          "$ref": "#/$defs/enumProperty"
+        },
+        {
+          "$ref": "#/$defs/dateProperty"
+        }
+      ]
+    }
+  ],
+  "unevaluatedProperties": false,
+  "examples": [
+    {
+      "id": "numeric_property",
+      "name": "Numeric property",
+      "type": "number",
+      "domain": {
+        "min": 0,
+        "max": 100
+      },
+      "filterable": true,
+      "sortable": true
+    },
+    {
+      "id": "string_property",
+      "name": "String property",
+      "type": "string",
+      "filterable": true,
+      "sortable": true
+    },
+    {
+      "id": "enum_property",
+      "name": "Enum property",
+      "type": "enum",
+      "domain": {
+        "values": [
+          {
+            "value": 0,
+            "label": "Zero",
+            "color": "#FF0000"
+          },
+          {
+            "value": 1,
+            "label": "One",
+            "color": "#00FF00"
+          }
+        ]
+      },
+      "filterable": true,
+      "sortable": true
+    }
+  ],
+  "$defs": {
+    "common": {
+      "type": "object",
+      "title": "Vector feature property common attributes",
+      "description": "Definition of vector feature property common attribute",
+      "properties": {
+        "id": {
+          "type": "string",
+          "title": "Property identifier",
+          "description": "The property id (e.g. column name)"
+        },
+        "name": {
+          "type": "string",
+          "title": "Property title",
+          "description": "The property human readable title"
+        },
+        "description": {
+          "type": "string",
+          "title": "Property description",
+          "description": "The property description"
+        },
+        "filterable": {
+          "type": "boolean",
+          "title": "Property filtering flag",
+          "default": true,
+          "description": "A flag indicating if filtering should be enabled for this property"
+        },
+        "sortable": {
+          "type": "boolean",
+          "title": "Property sorting flag",
+          "default": true,
+          "description": "A flag indicating if sorting should be enabled for this property"
+        },
+        "quantity": {
+          "$ref": "./measured-quantity.schema.json"
+        }
+      },
+      "required": [
+        "id",
+        "name"
+      ]
+    },
+    "stringProperty": {
+      "type": "object",
+      "title": "Vector feature string property",
+      "description": "Definition of vector feature string property specific attributes",
+      "properties": {
+        "type": {
+          "type": "string",
+          "title": "String property type constant",
+          "const": "string"
+        },
+        "subType": {
+          "type": "string",
+          "enum": [
+            "url",
+            "imageUrl"
+          ],
+          "title": "String property subtype",
+          "meta:enum": {
+            "url": "The string should be interpreted as an URL",
+            "imageUrl": "The string should be interpreted as an image URL"
+          }
+        }
+      },
+      "required": [
+        "type"
+      ]
+    },
+    "booleanProperty": {
+      "type": "object",
+      "title": "Boolean feature attribute",
+      "description": "Definition of vector feature boolean property specific attributes",
+      "properties": {
+        "type": {
+          "type": "string",
+          "title": "Boolean property type constant",
+          "const": "boolean"
+        }
+      },
+      "required": [
+        "type"
+      ]
+    },
+    "numericProperty": {
+      "type": "object",
+      "title": "Numeric feature attribute",
+      "description": "Definition of vector feature numeric property specific attributes",
+      "properties": {
+        "type": {
+          "type": "string",
+          "title": "Numeric property type constant",
+          "const": "number"
+        },
+        "domain": {
+          "$ref": "./dataset-variable-domain.schema.json#/$defs/numericDomain"
+        }
+      },
+      "required": [
+        "type"
+      ]
+    },
+    "enumProperty": {
+      "type": "object",
+      "title": "Enum feature attribute",
+      "description": "Definition of vector feature enum property specific attributes",
+      "properties": {
+        "type": {
+          "type": "string",
+          "title": "Enum property type constant",
+          "const": "enum"
+        },
+        "domain": {
+          "$ref": "./dataset-variable-domain.schema.json#/$defs/categoricalDomain"
+        }
+      },
+      "required": [
+        "type",
+        "domain"
+      ]
+    },
+    "dateProperty": {
+      "type": "object",
+      "title": "Date feature attribute",
+      "description": "Definition of vector feature date property specific attributes",
+      "properties": {
+        "type": {
+          "type": "string",
+          "const": "date"
+        },
+        "domain": {
+          "$ref": "./dataset-variable-domain.schema.json#/$defs/timeDomain"
+        }
+      },
+      "required": [
+        "type"
+      ]
+    }
+  }
+}

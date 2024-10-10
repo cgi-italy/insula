@@ -1,0 +1,44 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://cgi-italy.github.io/insula/schemas/v1.0.0/common/vector-feature-descriptor.schema.json",
+  "title": "Vector feature descriptor",
+  "description": "Metadata of a vector data source",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string",
+      "description": "The title of the feature"
+    },
+    "description": {
+      "type": "string",
+      "description": "A description for the feature"
+    },
+    "geometryType": {
+      "description": "The feature geometry type, if common across all features",
+      "type": "string",
+      "enum": [
+        "Point",
+        "MultiPoint",
+        "LineString",
+        "MultiLineString",
+        "Polygon",
+        "MultiPolygon"
+      ]
+    },
+    "geometryName": {
+      "type": "string",
+      "description": "The name of the geometry attribute"
+    },
+    "properties": {
+      "type": "array",
+      "title": "Feature attributes",
+      "description": "The feature attributes definitions",
+      "items": {
+        "$ref": "./vector-feature-property.schema.json"
+      }
+    }
+  },
+  "required": [
+    "properties"
+  ]
+}
