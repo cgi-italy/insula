@@ -1,4 +1,5 @@
-# INSULA platform
+# INSULA platform resources
 
 ## JSON Schemas
-[Schemas](schemas/)
+
+[Schemas](schemas/index.md)
