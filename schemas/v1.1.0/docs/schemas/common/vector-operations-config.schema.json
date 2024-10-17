@@ -1,0 +1,58 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://cgi-italy.github.io/insula/schemas/v1.1.0/common/vector-operations-config.schema.json",
+  "title": "Dataset vector operations config",
+  "description": "Configuration for vector dataset operations",
+  "type": "object",
+  "properties": {
+    "download": {
+      "$ref": "#/$defs/operationCommonProperties"
+    },
+    "processings": {
+      "type": "object",
+      "title": "Dataset processings configuration",
+      "description": "Configuration of dataset processings and tools",
+      "properties": {
+        "pointInfo": {
+          "title": "Feature info tool configuration",
+          "description": "Configuration of vector feature info tool",
+          "$ref": "#/$defs/operationCommonProperties"
+        },
+        "areaDistribution": {
+          "title": "Area distribution tool configuration",
+          "description": "Configuration of vector area distribution info tool",
+          "$ref": "#/$defs/operationCommonProperties"
+        },
+        "timeDistribution": {
+          "title": "Time distribution tool configuration",
+          "description": "Configuration of vector time distribution tool",
+          "$ref": "#/$defs/operationCommonProperties"
+        },
+        "pointSeries": {
+          "title": "Point series tool configuration",
+          "description": "Configuration of vector point series tool",
+          "$ref": "#/$defs/operationCommonProperties"
+        },
+        "featureTable": {
+          "title": "Feature table tool configuration",
+          "description": "Configuration of vector feature table tool",
+          "$ref": "#/$defs/operationCommonProperties"
+        }
+      }
+    }
+  },
+  "$defs": {
+    "operationCommonProperties": {
+      "type": "object",
+      "title": "Dataset operation configuration",
+      "properties": {
+        "disabled": {
+          "title": "Disable flag",
+          "description": "When set the dataset operation will be disabled",
+          "type": "boolean",
+          "default": false
+        }
+      }
+    }
+  }
+}

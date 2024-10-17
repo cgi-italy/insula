@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://cgi-italy.github.io/insula/schemas/v1.1.0/apps/insula-json-stac-collection-dataset.schema.json",
+  "title": "Insula STAC collection dataset",
+  "description": "Dataset initialized from a platform STAC collection. The collection must have the STAC metadata required to initialize the dataset",
+  "examples": [
+    {
+      "type": "stac_collection",
+      "collection": "eopaas90e071b58f00477eb3534291e0690da5"
+    }
+  ],
+  "type": "object",
+  "properties": {
+    "type": {
+      "type": "string",
+      "const": "stac_collection",
+      "title": "The type constant value"
+    },
+    "collection": {
+      "type": [
+        "string",
+        "number"
+      ],
+      "title": "Collection identifier",
+      "description": "The platform collection identifier. Can be the internal numeric ID or ther RESTO collection identifier"
+    }
+  },
+  "required": [
+    "type",
+    "collection"
+  ]
+}

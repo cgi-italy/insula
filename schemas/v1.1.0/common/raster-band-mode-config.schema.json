@@ -1,0 +1,113 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://cgi-italy.github.io/insula/schemas/v1.1.0/common/raster-band-mode-config.schema.json",
+  "title": "Raster band mode config",
+  "description": "Definition of raster band mode rendering configuration",
+  "oneOf": [
+    {
+      "$ref": "#/$defs/rasterSingleBandRenderModeConfig"
+    },
+    {
+      "$ref": "#/$defs/rasterPresetBandRenderModeConfig"
+    },
+    {
+      "$ref": "#/$defs/rasterBandCombinationRenderModeConfig"
+    }
+  ],
+  "unevaluatedProperties": false,
+  "$defs": {
+    "rasterSingleBandRenderModeConfig": {
+      "type": "object",
+      "title": "Single band render mode config",
+      "description": "Single band render mode config. In single band mode one band will be renderd with support for dynamic colormaps",
+      "properties": {
+        "type": {
+          "type": "string",
+          "title": "Single band type constant",
+          "const": "single"
+        },
+        "band": {
+          "type": "number",
+          "title": "Band index",
+          "description": "Raster band index"
+        }
+      },
+      "required": [
+        "type"
+      ]
+    },
+    "rasterPresetBandRenderModeConfig": {
+      "type": "object",
+      "title": "Preset render mode config",
+      "description": "Preset render mode config. In preset mode the layer will be rendered using a WMS style",
+      "properties": {
+        "type": {
+          "type": "string",
+          "title": "Preset type constant",
+          "const": "preset"
+        },
+        "preset": {
+          "type": "string",
+          "title": "Preset name",
+          "description": "The preset name. Typically the WMS style"
+        }
+      },
+      "required": [
+        "type"
+      ]
+    },
+    "rasterBandCombinationRenderModeConfig": {
+      "type": "object",
+      "title": "Band combination render mode config",
+      "description": "Band combination render mode config. In band combination mode the layer will be rendered with dynamic band combination selection",
+      "properties": {
+        "type": {
+          "type": "string",
+          "title": "Band combination type constant",
+          "const": "combination"
+        },
+        "red": {
+          "type": "number",
+          "title": "Red band",
+          "description": "Index of the band to use for red channel"
+        },
+        "green": {
+          "type": "number",
+          "title": "Green band",
+          "description": "Index of the band to use for green channel"
+        },
+        "blue": {
+          "type": "number",
+          "title": "Blue band",
+          "description": "Index of the band to use for blue channel"
+        },
+        "dataRange": {
+          "type": "object",
+          "title": "Bands data range",
+          "properties": {
+            "min": {
+              "type": "number",
+              "title": "Range min value",
+              "description": "The band map range minumum value"
+            },
+            "max": {
+              "type": "number",
+              "title": "Range max value",
+              "description": "The band map range maximum value"
+            }
+          },
+          "required": [
+            "min",
+            "max"
+          ]
+        }
+      },
+      "required": [
+        "type",
+        "red",
+        "green",
+        "blue"
+      ]
+    }
+  }
+}

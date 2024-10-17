@@ -1,0 +1,41 @@
+{
+  "type": "Collection",
+  "id": "stac-class-raster-collection",
+  "title": "Classification raster collection",
+  "stac_extensions": [
+    "https://insula.earth/schemas/v1.1.0/stac/insula-stac-extension.schema.json"
+  ],
+  "insula:metadata": {
+    "version": "v1.1.0",
+    "type": "raster",
+    "bands": [
+      {
+        "name": "Land cover",
+        "description": "Land Use Land Cover",
+        "domain": {
+          "values": [
+            { "value": 0, "label": "Built" },
+            { "value": 1, "label": "Crops" },
+            { "value": 2, "label": "Trees" },
+            { "value": 3, "label": "Water" },
+            { "value": 4, "label": "Rangeland" },
+            { "value": 5, "label": "Flooded Vegetation" },
+            { "value": 6, "label": "Snow/Ice" },
+            { "value": 7, "label": "Bare Ground" },
+            { "value": 8, "label": "Clouds" }
+          ]
+        },
+        "quantity": {
+          "id": "lulc_9",
+          "name": "LULC"
+        }
+      }
+    ],
+    "renderConfig": {
+      "defaultBandMode": {
+        "type": "preset",
+        "preset": "lulc_class_color_style"
+      }
+    }
+  }
+}
