@@ -1,0 +1,110 @@
+{
+  "type": "Collection",
+  "id": "stac-multi-band-raster-collection",
+  "title": "Multi band raster collection",
+  "stac_extensions": [
+    "https://insula.earth/schemas/v1.1.1/stac/insula-stac-extension.schema.json"
+  ],
+  "insula:metadata": {
+    "version": "v1.1.1",
+    "type": "raster",
+    "bands": [
+      {
+        "name": "Red",
+        "description": "Red band",
+        "color": "#ff0000",
+        "domain": {
+          "min": 0,
+          "max": 20000
+        },
+        "quantity": {
+          "id": "boa_reflectance",
+          "name": "Bottom of atmosphere reflectance"
+        },
+        "default": {
+          "colorScale": "turbo",
+          "range": {
+            "min": 0,
+            "max": 3000
+          },
+          "clamp": true
+        }
+      },
+      {
+        "name": "Green",
+        "description": "Green band",
+        "color": "#00ff00",
+        "domain": {
+          "min": 0,
+          "max": 20000
+        },
+        "quantity": {
+          "id": "boa_reflectance",
+          "name": "Bottom of atmosphere reflectance"
+        },
+        "default": {
+          "colorScale": "turbo",
+          "range": {
+            "min": 0,
+            "max": 3000
+          },
+          "clamp": true
+        }
+      },
+      {
+        "name": "Blue",
+        "description": "Blue band",
+        "color": "#0000ff",
+        "domain": {
+          "min": 0,
+          "max": 20000
+        },
+        "quantity": {
+          "id": "boa_reflectance",
+          "name": "Bottom of atmosphere reflectance"
+        },
+        "default": {
+          "colorScale": "turbo",
+          "range": {
+            "min": 0,
+            "max": 3000
+          },
+          "clamp": true
+        }
+      },
+      {
+        "name": "NIR",
+        "description": "NIR band",
+        "color": "#990000",
+        "domain": {
+          "min": 0,
+          "max": 20000
+        },
+        "quantity": {
+          "id": "boa_reflectance",
+          "name": "Bottom of atmosphere reflectance"
+        },
+        "default": {
+          "colorScale": "turbo",
+          "range": {
+            "min": 0,
+            "max": 3000
+          },
+          "clamp": true
+        }
+      }
+    ],
+    "renderConfig": {
+      "defaultBandMode": {
+        "type": "combination",
+        "red": 3,
+        "green": 1,
+        "blue": 1,
+        "dataRange": {
+          "min": 0,
+          "max": 3500
+        }
+      }
+    }
+  }
+}
