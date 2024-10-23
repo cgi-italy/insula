@@ -2,9 +2,6 @@ openapi: "3.0.3"
 info:
   title: Insula Platform APIs
   version: "1.0"
-servers:
-  - url: https://int.insula.earth/secure/api/v2.0/
-    description: Insula Integration Instance
 paths:
   /collections:
     get:
@@ -98,9 +95,3 @@ components:
           type: string
         owner:
           $ref: "#/components/schemas/User"
-
-security:
-  - openId: # <--- Use the same name as specified in securitySchemes
-      - openid
-      - profile
-      - email
