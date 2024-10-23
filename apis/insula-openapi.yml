@@ -29,10 +29,6 @@ paths:
                   - page
                   - _embedded
 components:
-  securitySchemes:
-    openId: # <--- Arbitrary name for the security scheme. Used to refer to it from elsewhere.
-      type: openIdConnect
-      openIdConnectUrl: https://identity.int.insula.earth/realms/eopaas/.well-known/openid-configuration
   schemas:
     UserRole:
       type: string
