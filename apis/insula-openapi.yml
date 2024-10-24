@@ -32,14 +32,17 @@ paths:
                   - page
                   - _embedded
 security:
-  - openId: # <--- Use the same name as specified in securitySchemes
+  - oauth2Password:
       - openid
-      - profile
 components:
   securitySchemes:
-    openId: # <--- Arbitrary name for the security scheme. Used to refer to it from elsewhere.
-      type: openIdConnect
-      openIdConnectUrl: https://identity.int.insula.earth/realms/eopaas/.well-known/openid-configuration
+    oauth2Password:
+      type: oauth2
+      flows:
+        password:
+          tokenUrl: https://identity.int.insula.earth/realms/eopaas/protocol/openid-connect/token
+          scopes:
+            openid: api access
   schemas:
     UserRole:
       type: string
