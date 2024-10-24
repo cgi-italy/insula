@@ -1,7 +1,10 @@
 openapi: "3.0.3"
 info:
   title: Insula Platform APIs
-  version: "1.0"
+  version: "2.0"
+servers:
+  - url: https://int.insula.earth/secure/api/v2.0/
+    description: Insula integration environment
 paths:
   /collections:
     get:
@@ -28,7 +31,15 @@ paths:
                 required:
                   - page
                   - _embedded
+security:
+  - openId: # <--- Use the same name as specified in securitySchemes
+      - openid
+      - profile
 components:
+  securitySchemes:
+    openId: # <--- Arbitrary name for the security scheme. Used to refer to it from elsewhere.
+      type: openIdConnect
+      openIdConnectUrl: https://identity.int.insula.earth/realms/eopaas/.well-known/openid-configuration
   schemas:
     UserRole:
       type: string
