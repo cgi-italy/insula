@@ -32,6 +32,7 @@ components:
   schemas:
     UserRole:
       type: string
+      title: User role
       enum:
         - GUEST
         - USER
@@ -40,6 +41,7 @@ components:
         - ADMIN
     User:
       type: object
+      title: Platform user
       properties:
         id:
           type: number
@@ -50,6 +52,7 @@ components:
     PagingState:
       type: object
       title: Pagination state
+      description: test desc
       properties:
         number:
           type: number
@@ -69,25 +72,46 @@ components:
 
     PlatformFileType:
       type: string
+      title: Platform file type
       enum:
         - REFERENCE_DATA
         - OUTPUT_PRODUCT
         - EXTERNAL_PRODUCT
         - REMOTE_DATA
-    CollectionShortProjection:
+    Collection:
       type: object
       properties:
-        id:
-          type: number
         name:
+          title: Collection name
           type: string
         description:
+          title: Collection description
           type: string
         productsType:
+          title: Collection product types
           type: string
         fileType:
           $ref: "#/components/schemas/PlatformFileType"
-        identifier:
-          type: string
-        owner:
-          $ref: "#/components/schemas/User"
+      required:
+        - name
+        - fileType
+    CollectionShortProjection:
+      type: object
+      allOf:
+        - type: object
+          properties:
+            id:
+              $ref: "#/components/schemas/PlatformIdentifier"
+            identifier:
+              type: string
+              title: Catalogue identifier
+            owner:
+              $ref: "#/components/schemas/User"
+          required:
+            - id
+            - identifier
+            - owner
+        - $ref: "#/components/schemas/Collection"
+    PlatformIdentifier:
+      type: number
+      title: Platform identifier
