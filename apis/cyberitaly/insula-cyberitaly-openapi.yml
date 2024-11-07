@@ -1,0 +1,131 @@
+openapi: "3.0.3"
+info:
+  title: Insula Platform APIs
+  version: "2.0"
+servers:
+  - url: https://iride-cyberitaly.space/secure/api/v2.0/
+    description: Insula integration environment
+paths:
+  /collections:
+    get:
+      summary: Returns a list of platform collections.
+      responses:
+        "200":
+          description: A list of platform collections
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  page:
+                    $ref: "#/components/schemas/PagingState"
+                  _embedded:
+                    type: object
+                    properties:
+                      collections:
+                        type: array
+                        items:
+                          $ref: "#/components/schemas/CollectionShortProjection"
+                    required:
+                      - collections
+                required:
+                  - page
+                  - _embedded
+security:
+  - oauth2Password:
+      - openid
+components:
+  securitySchemes:
+    oauth2Password:
+      type: oauth2
+      flows:
+        password:
+          tokenUrl: https://identity.iride-cyberitaly.space/realms/cyberitaly/protocol/openid-connect/token
+          scopes:
+            openid: api access
+  schemas:
+    UserRole:
+      type: string
+      title: User role
+      enum:
+        - GUEST
+        - USER
+        - EXPERT_USER
+        - CONTENT_AUTHORITY
+        - ADMIN
+    User:
+      type: object
+      title: Platform user
+      properties:
+        id:
+          type: number
+        name:
+          type: string
+        role:
+          $ref: "#/components/schemas/UserRole"
+    PagingState:
+      type: object
+      title: Pagination state
+      description: test desc
+      properties:
+        number:
+          type: number
+          title: Current page number
+        size:
+          type: number
+          title: Page size
+        totalElements:
+          type: number
+          title: Total elements
+        totalPages:
+          type: number
+          title: Total pages
+      required:
+        - number
+        - size
+
+    PlatformFileType:
+      type: string
+      title: Platform file type
+      enum:
+        - REFERENCE_DATA
+        - OUTPUT_PRODUCT
+        - EXTERNAL_PRODUCT
+        - REMOTE_DATA
+    Collection:
+      type: object
+      properties:
+        name:
+          title: Collection name
+          type: string
+        description:
+          title: Collection description
+          type: string
+        productsType:
+          title: Collection product types
+          type: string
+        fileType:
+          $ref: "#/components/schemas/PlatformFileType"
+      required:
+        - name
+        - fileType
+    CollectionShortProjection:
+      type: object
+      allOf:
+        - type: object
+          properties:
+            id:
+              $ref: "#/components/schemas/PlatformIdentifier"
+            identifier:
+              type: string
+              title: Catalogue identifier
+            owner:
+              $ref: "#/components/schemas/User"
+          required:
+            - id
+            - identifier
+            - owner
+        - $ref: "#/components/schemas/Collection"
+    PlatformIdentifier:
+      type: number
+      title: Platform identifier
