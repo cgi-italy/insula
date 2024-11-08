@@ -3,38 +3,296 @@ info:
   title: Insula Platform APIs
   version: "2.0"
 servers:
-  - url: https://iride-cyberitaly.space/secure/api/v2.0/
+  - url: https://iride-cyberitaly.space/secure/api/v2.0
     description: Insula integration environment
 paths:
   /collections:
     get:
-      summary: Returns a list of platform collections.
+      summary: Get platform collections.
+      operationId: getCollections
+      tags:
+        - collections
+      parameters:
+        - $ref: "#/components/parameters/collectionProjectionParam"
+        - $ref: "#/components/parameters/pageNumberParam"
+        - $ref: "#/components/parameters/pageSizeParam"
       responses:
         "200":
           description: A list of platform collections
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  page:
-                    $ref: "#/components/schemas/PagingState"
-                  _embedded:
-                    type: object
-                    properties:
-                      collections:
-                        type: array
-                        items:
-                          $ref: "#/components/schemas/CollectionShortProjection"
-                    required:
-                      - collections
-                required:
-                  - page
-                  - _embedded
+                $ref: "#/components/schemas/CollectionSearchResults"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "500":
+          $ref: "#/components/responses/InternalError"
+    post:
+      summary: Create a platform collection
+      operationId: createCollection
+      tags:
+        - collections
+      requestBody:
+        description: "The collection metadata.
+
+          - REFERENCE_DATA: To upload data into the collection through the APIs
+
+          - OUTPUT_PRODUCT: To store the results of a processing"
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CollectionBaseMetadata"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CollectionCreateOrUpdateResponse"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "500":
+          $ref: "#/components/responses/InternalError"
+  /collections/{collectionId}:
+    get:
+      summary: Get collection metadata.
+      operationId: getCollectionById
+      tags:
+        - collections
+      parameters:
+        - name: collectionId
+          in: path
+          description: Collection ID
+          required: true
+          schema:
+            $ref: "#/components/schemas/PlatformIdentifier"
+        - $ref: "#/components/parameters/collectionProjectionParam"
+      responses:
+        "200":
+          description: The collection metadata
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: "#/components/schemas/CollectionShortProjection"
+                  - $ref: "#/components/schemas/CollectionDetailedProjection"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalError"
+    patch:
+      summary: Update a platform collection
+      operationId: updateCollection
+      tags:
+        - collections
+      parameters:
+        - name: collectionId
+          in: path
+          description: Collection ID
+          required: true
+          schema:
+            $ref: "#/components/schemas/PlatformIdentifier"
+      requestBody:
+        description: "The collection metadata."
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  title: Collection name
+                  type: string
+                description:
+                  title: Collection description
+                  type: string
+                productsType:
+                  title: Collection product types
+                  description:
+                    Define the type of products contained in the collections.
+                    A free text field that can be used for filtering in search
+                  type: string
+      responses:
+        "200":
+          description: "Updated"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CollectionCreateOrUpdateResponse"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalError"
+    delete:
+      summary: Delete platform collection
+      operationId: deleteCollection
+      tags:
+        - collections
+      parameters:
+        - name: collectionId
+          in: path
+          description: Collection ID
+          required: true
+          schema:
+            $ref: "#/components/schemas/PlatformIdentifier"
+      responses:
+        "204":
+          description: "Deleted"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalError"
+
+  /collections/search/parametricFind:
+    get:
+      summary: Search for platform collections.
+      operationId: searchCollections
+      description: Allow to search for platform collections by text, file type,
+        product type, owner
+      tags:
+        - collections
+      parameters:
+        - in: query
+          name: filter
+          description: The search string
+          schema:
+            type: string
+        - in: query
+          name: fileType
+          required: false
+          description: The collection file type
+          schema:
+            $ref: "#/components/schemas/PlatformFileType"
+        - in: query
+          name: productsType
+          required: false
+          description: A list of collection product types
+          explode: false
+          schema:
+            type: array
+            items:
+              type: string
+        - in: query
+          name: notProductsType
+          required: false
+          description: A list of collection product types to omit from the result
+          explode: false
+          schema:
+            type: array
+            items:
+              type: string
+        - $ref: "#/components/parameters/collectionProjectionParam"
+        - $ref: "#/components/parameters/ownerParam"
+        - $ref: "#/components/parameters/notOwnerParam"
+        - $ref: "#/components/parameters/pageNumberParam"
+        - $ref: "#/components/parameters/pageSizeParam"
+
+      responses:
+        "200":
+          description: A list of platform collections
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CollectionSearchResults"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "500":
+          $ref: "#/components/responses/InternalError"
+
 security:
   - oauth2Password:
       - openid
 components:
+  parameters:
+    pageNumberParam:
+      in: query
+      name: page
+      required: false
+      schema:
+        type: integer
+        minimum: 0
+        default: 0
+      description: The pagination page number.
+    pageSizeParam:
+      in: query
+      name: size
+      required: false
+      schema:
+        type: integer
+        minimum: 0
+        default: 20
+      description: The number of items per page.
+    ownerParam:
+      in: query
+      name: owner
+      required: false
+      description: The owner of the resource. Must be provided as a reference uri in the form of https://iride-cyberitaly.space/secure/api/v2.0/users/{userId}
+      schema:
+        type: string
+        title: Resource owner
+        format: uri-template
+        pattern: ^https://iride-cyberitaly.space/secure/api/v2\.0/users/[0-9]+$
+    notOwnerParam:
+      in: query
+      name: notOwner
+      required: false
+      schema:
+        type: string
+        format: uri-template
+        pattern: ^https://iride-cyberitaly.space/secure/api/v2\.0/users/[0-9]+$
+    collectionProjectionParam:
+      in: query
+      name: projection
+      description: The collection projection. Determines the schema of the search results
+      required: false
+      schema:
+        type: string
+        default: ShortCollection
+        enum:
+          - shortCollection
+          - detailedCollection
+  responses:
+    NotFound:
+      description: The specified resource was not found
+    Unauthorized:
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+    BadRequest:
+      description: Bad request
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              timestamp:
+                type: string
+                format: date-time
+              status:
+                type: integer
+              error:
+                type: string
+              path:
+                type: string
+    InternalError:
+      description: Internal server error
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
   securitySchemes:
     oauth2Password:
       type: oauth2
@@ -44,6 +302,15 @@ components:
           scopes:
             openid: api access
   schemas:
+    ErrorResponse:
+      type: object
+      properties:
+        status_code:
+          type: integer
+        status:
+          type: string
+      required:
+        - status
     UserRole:
       type: string
       title: User role
@@ -87,12 +354,14 @@ components:
     PlatformFileType:
       type: string
       title: Platform file type
+      description: The platform file type.
+        REFERENCE_DATA is used for uploaded data. OUTPUT_PRODUCT for processing output
       enum:
         - REFERENCE_DATA
         - OUTPUT_PRODUCT
         - EXTERNAL_PRODUCT
         - REMOTE_DATA
-    Collection:
+    CollectionBaseMetadata:
       type: object
       properties:
         name:
@@ -101,17 +370,21 @@ components:
         description:
           title: Collection description
           type: string
-        productsType:
-          title: Collection product types
-          type: string
         fileType:
           $ref: "#/components/schemas/PlatformFileType"
+        productsType:
+          title: Collection product types
+          description: Define the type of products contained in the collections.
+            A free text field that can be used for filtering in search
+          type: string
       required:
         - name
         - fileType
     CollectionShortProjection:
       type: object
+      title: Collection short projection
       allOf:
+        - $ref: "#/components/schemas/CollectionBaseMetadata"
         - type: object
           properties:
             id:
@@ -125,7 +398,71 @@ components:
             - id
             - identifier
             - owner
-        - $ref: "#/components/schemas/Collection"
+    CollectionDetailedProjection:
+      type: object
+      title: Collection detailed projection
+      allOf:
+        - $ref: "#/components/schemas/CollectionShortProjection"
+        - type: object
+          properties:
+            size:
+              type: number
+              title: Collection size
+          required:
+            - size
+    CollectionSearchResults:
+      type: object
+      title: Collection search results
+      properties:
+        page:
+          $ref: "#/components/schemas/PagingState"
+        _embedded:
+          type: object
+          properties:
+            collections:
+              type: array
+              items:
+                oneOf:
+                  - $ref: "#/components/schemas/CollectionShortProjection"
+                  - $ref: "#/components/schemas/CollectionDetailedProjection"
+          required:
+            - collections
+      required:
+        - page
+        - _embedded
+    CollectionCreateOrUpdateResponse:
+      allOf:
+        - $ref: "#/components/schemas/CollectionBaseMetadata"
+        - type: object
+          properties:
+            _links:
+              type: object
+              properties:
+                self:
+                  type: object
+                  title: Self link
+                  description: A link to the created resource
+                  properties:
+                    href:
+                      type: string
+                      format: uri
+                      pattern: ^https://iride-cyberitaly.space/secure/api/v2\.0/collections/[0-9]+
+                  required:
+                    - href
+              required:
+                - self
+            _embedded:
+              type: object
+              properties:
+                owner:
+                  $ref: "#/components/schemas/User"
+          required:
+            - _links
+            - _embedded
     PlatformIdentifier:
-      type: number
+      type: integer
       title: Platform identifier
+tags:
+  - name: collections
+    description: Platform collection related operations. A collection
+      is a container for files of a certain type.
