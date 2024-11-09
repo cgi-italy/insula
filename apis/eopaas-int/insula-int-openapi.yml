@@ -3,7 +3,7 @@ info:
   title: Insula Platform APIs
   version: '2.0'
 servers:
-  - url: https://iride-cyberitaly.space/secure/api/v2.0
+  - url: https://int.insula.earth/secure/api/v2.0
     description: Insula integration environment
 security:
   - oauth2Password:
@@ -215,7 +215,7 @@ components:
       type: oauth2
       flows:
         password:
-          tokenUrl: https://identity.iride-cyberitaly.space/realms/cyberitaly/protocol/openid-connect/token
+          tokenUrl: https://identity.int.insula.earth/realms/eopaas/protocol/openid-connect/token
           scopes:
             openid: api access
   parameters:
@@ -237,17 +237,17 @@ components:
       schema:
         type: string
         format: uri-template
-        pattern: ^https://iride-cyberitaly.space/secure/api/v2\.0/users/[0-9]+$
+        pattern: ^https://int.insula.earth/secure/api/v2\.0/users/[0-9]+$
     ownerParam:
       in: query
       name: owner
       required: false
-      description: The owner of the resource. Must be provided as a reference uri in the form of https://iride-cyberitaly.space/secure/api/v2.0/users/{userId}
+      description: The owner of the resource. Must be provided as a reference uri in the form of https://int.insula.earth/secure/api/v2.0/users/{userId}
       schema:
         type: string
         title: Resource owner
         format: uri-template
-        pattern: ^https://iride-cyberitaly.space/secure/api/v2\.0/users/[0-9]+$
+        pattern: ^https://int.insula.earth/secure/api/v2\.0/users/[0-9]+$
     pageNumberParam:
       in: query
       name: page
@@ -304,8 +304,8 @@ components:
                     href:
                       type: string
                       format: uri
-                      pattern: ^https://iride-cyberitaly.space/secure/api/v2\.0/collections/[0-9]+
-                      example: https://iride-cyberitaly.space/secure/api/v2.0/collections/42
+                      pattern: ^https://int.insula.earth/secure/api/v2\.0/collections/[0-9]+
+                      example: https://int.insula.earth/secure/api/v2.0/collections/42
                   required:
                     - href
               required:
@@ -454,7 +454,7 @@ components:
             timestamp: '1982-03-02T00:00:00Z'
             status: 400
             error: Bad request
-            path: https://iride-cyberitaly.space/secure/api/v2.0/users
+            path: https://int.insula.earth/secure/api/v2.0/users
     InternalError:
       description: Internal server error
       content:
