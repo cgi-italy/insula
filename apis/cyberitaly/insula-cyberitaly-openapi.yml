@@ -11,6 +11,8 @@ security:
 tags:
   - name: collections
     description: Platform collection related operations. A collection is a container for files of a certain type.
+  - name: platformFiles
+    description: Platform files related operations.
 paths:
   /collections:
     get:
@@ -48,6 +50,10 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/CollectionBaseMetadata'
+            example:
+              name: My Collection
+              fileType: REFERENCE_DATA
+              productsType: mixed
       responses:
         '201':
           description: Collection succesfully created. ID of the resource can be found in the "self" href of the "_links" object
@@ -209,6 +215,218 @@ paths:
           $ref: '#/components/responses/Unauthorized'
         '500':
           $ref: '#/components/responses/InternalError'
+  /platformFiles:
+    get:
+      summary: Get platform files.
+      operationId: getPlatformFiles
+      tags:
+        - platformFiles
+      parameters:
+        - $ref: '#/components/parameters/platformFileProjectionParam'
+        - $ref: '#/components/parameters/pageNumberParam'
+        - $ref: '#/components/parameters/pageSizeParam'
+      responses:
+        '200':
+          description: A list of platform files
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlatformFileSearchResults'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalError'
+  /platformFiles/{platformFileId}:
+    get:
+      summary: Get platform file metadata.
+      operationId: getPlatformFileById
+      tags:
+        - platformFiles
+      parameters:
+        - name: platformFileId
+          in: path
+          description: Platoform file ID
+          required: true
+          schema:
+            $ref: '#/components/schemas/PlatformIdentifier'
+        - $ref: '#/components/parameters/platformFileProjectionParam'
+      responses:
+        '200':
+          description: The platform file metadata
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: '#/components/schemas/PlatformFileShortProjection'
+                  - $ref: '#/components/schemas/PlatformFileDetailedProjection'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalError'
+    delete:
+      summary: Delete platform file
+      operationId: deletePlatformFile
+      tags:
+        - platformFiles
+      parameters:
+        - name: platformFileId
+          in: path
+          description: Platform file ID
+          required: true
+          schema:
+            $ref: '#/components/schemas/PlatformIdentifier'
+      responses:
+        '204':
+          description: Deleted
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalError'
+  /platformFiles/{platformFileId}/dl:
+    get:
+      summary: Download platform file.
+      operationId: downloadPlatformFile
+      tags:
+        - platformFiles
+      parameters:
+        - name: platformFileId
+          in: path
+          description: Platoform file ID
+          required: true
+          schema:
+            $ref: '#/components/schemas/PlatformIdentifier'
+      responses:
+        '200':
+          description: The platform file content
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+              example: ''
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalError'
+  /platformFiles/refData:
+    post:
+      summary: Upload a platform file into a reference collection
+      operationId: uploadRefData
+      tags:
+        - platformFiles
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                collection:
+                  type: string
+                  format: uuid
+                  description: the target collection catalogue identifier (i.e. the 'identifier' field in Collection metadata)
+                fileType:
+                  $ref: '#/components/schemas/UploadFileType'
+                file:
+                  type: string
+                  format: binary
+                userProperties:
+                  type: object
+                  properties:
+                    title:
+                      type: string
+                    description:
+                      type: string
+                    startTime:
+                      type: string
+                      format: date-time
+                    endTime:
+                      type: string
+                      format: date-time
+                    geometry:
+                      type: string
+                      format: wkt
+                      description: A geometry in WKT format
+              required:
+                - collection
+                - fileType
+                - file
+      responses:
+        '201':
+          description: File succesfully uploaded
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlatformFileUploadResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '409':
+          description: Conflict
+          content:
+            text/plain:
+              schema:
+                type: string
+        '500':
+          $ref: '#/components/responses/InternalError'
+  /platformFiles/search/parametricFind:
+    get:
+      summary: Search for platform files.
+      operationId: searchPlatformFiles
+      description: Allow to search for platform files by text, collection, file type, job and/or owner
+      tags:
+        - platformFiles
+      parameters:
+        - in: query
+          name: filter
+          description: The search string
+          schema:
+            type: string
+        - in: query
+          name: fileType
+          required: false
+          description: The collection file type
+          schema:
+            $ref: '#/components/schemas/PlatformFileType'
+        - in: query
+          name: collection
+          required: false
+          description: The parent collection. Must be provided as a reference uri in the form of https://iride-cyberitaly.space/secure/api/v2.0/collections/{collectionId}
+          schema:
+            type: string
+            format: uri
+            pattern: ^https://iride-cyberitaly.space/secure/api/v2\.0/collections/[0-9]+$
+        - in: query
+          name: job
+          required: false
+          description: The job that generated the file. Must be provided as a reference uri in the form of https://iride-cyberitaly.space/secure/api/v2.0/jobs/{collectionId}
+          schema:
+            type: string
+            format: uri
+            pattern: ^https://iride-cyberitaly.space/secure/api/v2\.0/jobs/[0-9]+$
+        - $ref: '#/components/parameters/platformFileProjectionParam'
+        - $ref: '#/components/parameters/ownerParam'
+        - $ref: '#/components/parameters/notOwnerParam'
+        - $ref: '#/components/parameters/pageNumberParam'
+        - $ref: '#/components/parameters/pageSizeParam'
+        - $ref: '#/components/parameters/sortParam'
+      responses:
+        '200':
+          description: A list of platform collections
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CollectionSearchResults'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalError'
 components:
   securitySchemes:
     oauth2Password:
@@ -226,7 +444,7 @@ components:
       required: false
       schema:
         type: string
-        default: ShortCollection
+        default: shortCollection
         enum:
           - shortCollection
           - detailedCollection
@@ -234,6 +452,7 @@ components:
       in: query
       name: notOwner
       required: false
+      description: Show all resources not owned by the provided owner. Must be provided as a reference uri in the form of https://iride-cyberitaly.space/secure/api/v2.0/users/{userId}
       schema:
         type: string
         format: uri-template
@@ -246,7 +465,7 @@ components:
       schema:
         type: string
         title: Resource owner
-        format: uri-template
+        format: uri
         pattern: ^https://iride-cyberitaly.space/secure/api/v2\.0/users/[0-9]+$
     pageNumberParam:
       in: query
@@ -266,6 +485,25 @@ components:
         minimum: 0
         default: 20
       description: The number of items per page.
+    platformFileProjectionParam:
+      in: query
+      name: projection
+      description: The platform file output projection. Determines the schema of the search results
+      required: false
+      schema:
+        type: string
+        default: shortPlatformFile
+        enum:
+          - shortPlatformFile
+          - detailedPlatformFile
+    sortParam:
+      in: query
+      name: sort
+      required: false
+      schema:
+        type: string
+        pattern: ^[a-zA-Z]+(,(asc|desc))?$
+      description: The query sort parameter. It should be provided as the parameter name to sort by, optionally followed by a comma and the 'asc' or 'desc' keyword
   schemas:
     CollectionBaseMetadata:
       type: object
@@ -363,22 +601,158 @@ components:
               type: string
               format: uuid
               title: Catalogue identifier
+              description: '-| The catalogue identifier. It should be used to populate the ''collection'' tag of the platformFiles/refData upload call'
             owner:
               $ref: '#/components/schemas/User'
           required:
             - id
             - identifier
             - owner
-    ErrorResponse:
-      type: object
-      title: Error response
-      properties:
-        status_code:
-          type: integer
-        status:
-          type: string
-      required:
-        - status
+    GeoJSONGeometry:
+      title: GeoJSON Geometry
+      oneOf:
+        - title: GeoJSON Point
+          type: object
+          required:
+            - type
+            - coordinates
+          properties:
+            type:
+              type: string
+              enum:
+                - Point
+            coordinates:
+              type: array
+              minItems: 2
+              items:
+                type: number
+            bbox:
+              type: array
+              minItems: 4
+              items:
+                type: number
+        - title: GeoJSON LineString
+          type: object
+          required:
+            - type
+            - coordinates
+          properties:
+            type:
+              type: string
+              enum:
+                - LineString
+            coordinates:
+              type: array
+              minItems: 2
+              items:
+                type: array
+                minItems: 2
+                items:
+                  type: number
+            bbox:
+              type: array
+              minItems: 4
+              items:
+                type: number
+        - title: GeoJSON Polygon
+          type: object
+          required:
+            - type
+            - coordinates
+          properties:
+            type:
+              type: string
+              enum:
+                - Polygon
+            coordinates:
+              type: array
+              items:
+                type: array
+                minItems: 4
+                items:
+                  type: array
+                  minItems: 2
+                  items:
+                    type: number
+            bbox:
+              type: array
+              minItems: 4
+              items:
+                type: number
+        - title: GeoJSON MultiPoint
+          type: object
+          required:
+            - type
+            - coordinates
+          properties:
+            type:
+              type: string
+              enum:
+                - MultiPoint
+            coordinates:
+              type: array
+              items:
+                type: array
+                minItems: 2
+                items:
+                  type: number
+            bbox:
+              type: array
+              minItems: 4
+              items:
+                type: number
+        - title: GeoJSON MultiLineString
+          type: object
+          required:
+            - type
+            - coordinates
+          properties:
+            type:
+              type: string
+              enum:
+                - MultiLineString
+            coordinates:
+              type: array
+              items:
+                type: array
+                minItems: 2
+                items:
+                  type: array
+                  minItems: 2
+                  items:
+                    type: number
+            bbox:
+              type: array
+              minItems: 4
+              items:
+                type: number
+        - title: GeoJSON MultiPolygon
+          type: object
+          required:
+            - type
+            - coordinates
+          properties:
+            type:
+              type: string
+              enum:
+                - MultiPolygon
+            coordinates:
+              type: array
+              items:
+                type: array
+                items:
+                  type: array
+                  minItems: 4
+                  items:
+                    type: array
+                    minItems: 2
+                    items:
+                      type: number
+            bbox:
+              type: array
+              minItems: 4
+              items:
+                type: number
     PagingState:
       type: object
       title: Pagination state
@@ -399,6 +773,152 @@ components:
       required:
         - number
         - size
+    PlatformFileBaseMetadata:
+      type: object
+      title: Platform file metadata
+      properties:
+        filename:
+          title: File name
+          type: string
+        restoId:
+          title: Catalogue identifier
+          type: string
+          format: uuid
+        type:
+          $ref: '#/components/schemas/PlatformFileType'
+      required:
+        - filename
+        - restoId
+        - type
+    PlatformFileCatalogueMetadata:
+      type: object
+      title: Platform file catalogue product metadata
+      properties:
+        id:
+          type: string
+          format: uuid
+          title: Catalogue id
+        geometry:
+          $ref: '#/components/schemas/GeoJSONGeometry'
+        properties:
+          type: object
+          properties:
+            title:
+              type: string
+              title: Product title
+            description:
+              type: string
+              title: Product description
+            published:
+              type: string
+              format: date-time
+              title: Publication date
+            startDate:
+              type: string
+              format: date-time
+              title: Product start date
+            completionDate:
+              type: string
+              format: date-time
+              title: Product end date
+            collection:
+              type: string
+              format: uuid
+              title: Parent collection identifier
+      required:
+        - filename
+        - restoId
+        - type
+    PlatformFileDetailedProjection:
+      type: object
+      title: Platform file detailed projection
+      allOf:
+        - $ref: '#/components/schemas/PlatformFileShortProjection'
+        - type: object
+          properties:
+            metadata:
+              $ref: '#/components/schemas/PlatformFileCatalogueMetadata'
+            uri:
+              type: string
+              format: uri
+              title: Platform file uri
+              description: The platform file uri. Use this as input of processing jobs
+            _links:
+              $ref: '#/components/schemas/PlatformFileHalLinks'
+    PlatformFileHalLinks:
+      type: object
+      title: Platform file HAL links
+      properties:
+        self:
+          type: object
+          title: Self link
+          description: A link to the created resource
+          properties:
+            href:
+              type: string
+              format: uri
+              pattern: ^https://iride-cyberitaly.space/secure/api/v2\.0/files/[0-9]+
+              example: https://iride-cyberitaly.space/secure/api/v2.0/files/42
+          required:
+            - href
+        wms:
+          type: object
+          title: WMS link
+          description: A link to a WMS layer associated with the file
+          properties:
+            href:
+              type: string
+              format: uri
+              example: https://geoserver.iride-cyberitaly.space/geoserver/wms?version=1.1.0&layers=layerName
+          required:
+            - href
+        wfs:
+          type: object
+          title: WFS link
+          description: A link to a WFS layer associated with the file
+          properties:
+            href:
+              type: string
+              format: uri
+              example: https://geoserver.iride-cyberitaly.space/geoserver/wfs?version=1.0.0&typeName=layerName
+          required:
+            - href
+      required:
+        - self
+    PlatformFileSearchResults:
+      type: object
+      title: Platform file search results
+      properties:
+        page:
+          $ref: '#/components/schemas/PagingState'
+        _embedded:
+          type: object
+          properties:
+            platformFiles:
+              type: array
+              items:
+                oneOf:
+                  - $ref: '#/components/schemas/PlatformFileShortProjection'
+                  - $ref: '#/components/schemas/PlatformFileDetailedProjection'
+          required:
+            - platformFiles
+      required:
+        - page
+        - _embedded
+    PlatformFileShortProjection:
+      type: object
+      title: Platform file short projection
+      allOf:
+        - $ref: '#/components/schemas/PlatformFileBaseMetadata'
+        - type: object
+          properties:
+            id:
+              $ref: '#/components/schemas/PlatformIdentifier'
+            owner:
+              $ref: '#/components/schemas/User'
+          required:
+            - id
+            - owner
     PlatformFileType:
       type: string
       title: Platform file type
@@ -411,15 +931,61 @@ components:
         - OUTPUT_PRODUCT
         - EXTERNAL_PRODUCT
         - REMOTE_DATA
+    PlatformFileUploadResponse:
+      type: object
+      title: Platform file upload response
+      description: Platform file metadata. Any data access link (e.g. WMS and/or WFS) will be available under the '_links' object
+      properties:
+        platformFile:
+          allOf:
+            - $ref: '#/components/schemas/PlatformFileBaseMetadata'
+            - type: object
+              properties:
+                id:
+                  $ref: '#/components/schemas/PlatformIdentifier'
+                fileSize:
+                  type: integer
+                  title: File size
+                  description: File size in bytes
+                uri:
+                  type: string
+                  format: uri
+                  title: Platform uri
+                  description: The platform file uri. Use this as input of processing jobs
+        statusMessage:
+          type: string
+          title: Status message
+        _links:
+          $ref: '#/components/schemas/PlatformFileHalLinks'
+      required:
+        - platformFile
+        - _links
     PlatformIdentifier:
       type: integer
       title: Platform identifier
+      minimum: 1
+    UploadFileType:
+      type: string
+      title: Upload file type
+      description: |-
+        The upload file type.
+        - GEOTIFF: Geotiff file. A WMS layer will be created for data visualization
+        - SHAPEFILE: Shapefile. The file should be a zip archive containing
+        in the root folder the set of shapefile inputs
+        ('shp', 'dbf', 'shx' and 'prj' as a minimum). A WFS layer will be created
+        allowing access to the underlying data, and a WMS layer for its visualization. 
+        - OTHER: Other file. It won't be associated to any visualization
+      enum:
+        - GEOTIFF
+        - SHAPEFILE
+        - MOSAIC
+        - OTHER
     User:
       type: object
       title: Platform user
       properties:
         id:
-          type: number
+          $ref: '#/components/schemas/PlatformIdentifier'
         name:
           type: string
         role:
@@ -454,13 +1020,28 @@ components:
             timestamp: '1982-03-02T00:00:00Z'
             status: 400
             error: Bad request
-            path: https://iride-cyberitaly.space/secure/api/v2.0/users
+            path: /secure/api/v2.0/users
     InternalError:
       description: Internal server error
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/ErrorResponse'
+            type: object
+            properties:
+              timestamp:
+                type: string
+                format: date-time
+              status:
+                type: integer
+              error:
+                type: string
+              path:
+                type: string
+          example:
+            timestamp: '1982-03-02T00:00:00Z'
+            status: 500
+            error: Internal server error
+            path: /secure/api/v2.0/users
     NotFound:
       description: The specified resource was not found
     Unauthorized:
@@ -468,7 +1049,15 @@ components:
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/ErrorResponse'
+            type: object
+            title: Error response
+            properties:
+              status_code:
+                type: integer
+              status:
+                type: string
+            required:
+              - status
           example:
-            status_code: 403
-            status: Invalid token
+            status_code: 401
+            status: Unauthorized
