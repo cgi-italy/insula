@@ -9,8 +9,18 @@
       rel="stylesheet"
       href="https://unpkg.com/swagger-ui-dist@5.11.0/swagger-ui.css"
     />
+    <script src="https://unpkg.com/rapipdf/dist/rapipdf-min.js"></script>
   </head>
   <body>
+    <div style="float: right; margin-right: 20px">
+      <rapi-pdf
+        style="height: 40px; font-size: 18px"
+        spec-url="https://cgi-italy.github.io/insula/apis/cyberitaly/insula-cyberitaly-openapi.yml"
+        hide-input="true"
+        button-label="DOWNLOAD PDF DOCS"
+      >
+      </rapi-pdf>
+    </div>
     <div id="swagger-ui"></div>
     <script
       src="https://unpkg.com/swagger-ui-dist@5.11.0/swagger-ui-bundle.js"
