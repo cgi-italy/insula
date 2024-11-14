@@ -4,7 +4,7 @@ info:
   version: '2.0'
 servers:
   - url: https://int.insula.earth/secure/api/v2.0
-    description: Insula integration environment
+    description: Integration environment
 security:
   - oauth2Password:
       - openid
