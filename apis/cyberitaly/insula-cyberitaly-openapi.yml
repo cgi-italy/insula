@@ -1274,6 +1274,8 @@ components:
             Only service output of type `GEOTIFF` and `SHAPEFILE`
             should be listed here. Check `Job Geoserver ingestion specification` schema for the definition of
             the `GEOSERVER_SPEC` object.
+            If not provided each `GEOTIFF` will be ingested into a new WMS layer, and each `SHAPEFILE` will be ingested
+            into a new WFS layer.
           items:
             type: string
           minItems: 1
@@ -1335,6 +1337,13 @@ components:
         geoserverType:
           type: string
           title: Geoserver store type
+          description: |-
+            - SINGLE_COVERAGE: A WMS layer will be created for data visualization. Each output shall be of COG (Cloud Optimized Geotiff) type.
+            - MOSAIC: A time-enabled WMS layer will be created for data visualization. Each output shall be of COG (Cloud Optimized Geotiff) type.
+            Each file must include in its name the time in ISO 8601 basic format `YYYYMMDDThhmmssZ' (e.g. 20100101T000000Z ).
+            - SHAPEFILE_POSTGIS_IMPORT: A WFS layer will be created for data access and a WMS layer for visualization.
+            Each output shall be of `SHAPEFILE` type, that is a zip archive containing in the root folder the set of shapefile inputs
+            ('shp', 'dbf', 'shx' and 'prj' as a minimum).
           enum:
             - SINGLE_COVERAGE
             - MOSAIC
@@ -1342,19 +1351,23 @@ components:
         datastoreName:
           type: string
           title: Geoserver store name
+          description: The data store name. Shall be provided only for `MOSAIC` store type, to add new granules to a coverage in an existing datastore.
         coverageName:
           type: string
           title: Geoserver coverage name
-          description: The geoserver coverage name. Use it only for 'MOSAIC' store type. Use 'layerName' in other cases
+          description: The geoserver coverage name. Shall be provided only for `MOSAIC` store type, to add new granules to an existing coverage.
         layerName:
           type: string
           title: Geoserver layer name
+          description: |-
+            The geoserver layer name. Shall be provided for `SHAPEFILE_POSTGIS_IMPORT` store type, to add new data to an existing DB table.
+            The new inputs shall have the same schema as the existing table.
         style:
           type: string
           title: Geoserver layer style
         workspace:
           type: string
-          title: Geoserver layer workspace
+          title: Geoserver layer workspace. Shall be provided to add new data (e.g. raster granule or vector table) to an existing data store
         options:
           type: object
           properties:
@@ -1366,6 +1379,8 @@ components:
                 - CREATE
                 - APPEND
                 - REPLACE
+      required:
+        - geoserverType
     JobLogs:
       type: array
       title: Job logs
@@ -1685,12 +1700,16 @@ components:
       title: Platform file upload type
       description: |-
         The upload file type.
-        - GEOTIFF: Geotiff file. A WMS layer will be created for data visualization
-        - SHAPEFILE: Shapefile. The file should be a zip archive containing
+        - GEOTIFF: Geotiff file. It shall be in COG (Cloud Optimized Geotiff) format. A WMS layer will be created for data visualization.
+        - SHAPEFILE: Shapefile. The file shall be a zip archive containing
         in the root folder the set of shapefile inputs
         ('shp', 'dbf', 'shx' and 'prj' as a minimum). A WFS layer will be created
-        allowing access to the underlying data, and a WMS layer for its visualization. 
-        - OTHER: Other file. It won't be associated to any visualization
+        allowing access to the underlying data, and a WMS layer for its visualization.
+        - MOSAIC: Geotiff mosaic. The product shall be in COG (Cloud Optimized Geotiff) format and 
+        will be added to a time-enabled raster coverage (WMS layer).
+        The filename must include the time in ISO 8601 basic format `YYYYMMDDThhmmssZ' (e.g. 20100101T000000Z ).
+        All files of the collection will be ingested in the same raster coverage (WMS layer) and shall have the same bands configuration.
+        - OTHER: Other file type. It won't be associated to any visualization
       enum:
         - GEOTIFF
         - SHAPEFILE
