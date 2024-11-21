@@ -15,6 +15,8 @@ tags:
     description: Platform files related operations.
   - name: jobs
     description: Processing jobs related operations.
+  - name: search
+    description: Catalogue search.
 paths:
   /collections:
     get:
@@ -933,8 +935,548 @@ paths:
           $ref: '#/components/responses/Unauthorized'
         '500':
           $ref: '#/components/responses/InternalError'
+  /search:
+    get:
+      summary: Search for catalogue products
+      description: Perform a catalogue search.
+      operationId: catalogueSearch
+      tags:
+        - search
+      parameters:
+        - in: query
+          name: catalogue
+          description: The query catalogue
+          schema:
+            type: string
+          examples:
+            referenceData:
+              summary: User uploaded data
+              value: REF_DATA
+            outputProducts:
+              summary: Processing outputs
+              value: PLATFORM_PRODUCTS
+            openData:
+              summary: Copernicus EO data
+              value: SATELLITE
+          required: true
+        - in: query
+          name: collection
+          description: |-
+            The processing output collection identifier.
+            Mandatory if the catalogue parameter is set to `PLATFORM_PRODUCTS`. Unused otherwise
+          schema:
+            type: string
+        - in: query
+          name: refDataCollection
+          description: |-
+            The reference collection identifier.
+            Mandatory if the catalogue parameter is set to `REF_DATA`. Unused otherwise
+          schema:
+            type: string
+        - in: query
+          name: aoi
+          description: The area of interest, expressed as a WKT polygon string.
+          schema:
+            type: string
+            format: wkt
+        - in: query
+          name: productDateStart
+          description: The product start date
+          schema:
+            type: string
+            format: date-time
+        - in: query
+          name: productDateEnd
+          description: The product end date
+          schema:
+            type: string
+            format: date-time
+        - in: query
+          name: identifier
+          description: The product identifier
+          schema:
+            type: string
+        - in: query
+          name: additionalParams
+          description: |-
+            Additional query parameters.
+            The full list of available query parameters can be retrieved from the `search/parameters` endpoint.
+          schema:
+            type: object
+            additionalProperties:
+              type: string
+              pattern: ^[A-Za-z][A-Za-z0-9]*$
+            example:
+              additionalParam1: additionalValue1
+              additionalParam2: additionalValue2
+        - in: query
+          name: resultsPerPage
+          description: Page size
+          schema:
+            type: integer
+            default: 20
+        - $ref: '#/components/parameters/pageNumberParam'
+      responses:
+        '200':
+          description: A list of catalogue results
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CatalogueSearchResults'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalError'
+  /search/parameters:
+    get:
+      summary: Retrieve search parameters
+      operationId: getSearchParameters
+      description: Retrieve description of available search parameters
+      tags:
+        - search
+      parameters:
+        - in: query
+          name: resolveAll
+          description: If set to false, it will prevent expanding all dynamic parameters (e.g. select options), providing a faster response
+          schema:
+            type: boolean
+            default: true
+      responses:
+        '200':
+          description: List of search parameters
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CatalogueSearchParameters'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalError'
+  /search/parameter/{parameterName}:
+    get:
+      summary: Retrieve dynamic search parameter values
+      operationId: getDynamicSearchParameterValues
+      description: Retrieve allowed values for search parameter of `dynamic` type
+      tags:
+        - search
+      parameters:
+        - name: parameterName
+          in: path
+          description: Dynamic parameter name
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: List of search parameters
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CatalogueSearchParameterSelect'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalError'
 components:
   schemas:
+    CatalogueCopernicusProduct:
+      type: object
+      title: Catalogue copernicus product
+      description: Schema for `SATELLITE` catalogue product
+      allOf:
+        - $ref: '#/components/schemas/CatalogueProductBaseMetadata'
+        - type: object
+          properties:
+            extraParams:
+              type: object
+              title: Additional metadata
+              properties:
+                title:
+                  type: string
+                  title: Product title
+                description:
+                  type: string
+                  title: Product description
+                collection:
+                  type: string
+                  title: Product collection
+                platform:
+                  type: string
+                  title: Platform/Satellite short name.
+                instrument:
+                  type: string
+                  title: Product instrument
+                productType:
+                  type: string
+                  title: Product type
+                sensorMode:
+                  type: string
+                  title: Sensor mode
+                processingLevel:
+                  type: string
+                  title: Processing level
+                polarisation:
+                  type: string
+                  title: Polarisation
+                swath:
+                  type: string
+                  title: Swath
+                thumbnail:
+                  type: string
+                  format: url
+                  title: Product thumbnail
+                quicklook:
+                  type: string
+                  format: url
+                  title: Product quicklook
+                productStartTime:
+                  type: string
+                  format: date-time
+                  title: Product start time
+                productEndTime:
+                  type: string
+                  format: date-time
+                  title: Product end time
+                orbitNumber:
+                  type: integer
+                  title: Orbit number
+                orbitDirection:
+                  type: string
+                  enum:
+                    - ASCENDING
+                    - DESCENDING
+          required:
+            - extraParams
+    CataloguePlatformProcessingOutputProduct:
+      type: object
+      title: Catalogue processing output product
+      description: Schema for `PLATFORM_PRODUCTS` catalogue product
+      allOf:
+        - $ref: '#/components/schemas/CataloguePlatformProductCommon'
+        - type: object
+          properties:
+            intJobId:
+              type: integer
+              title: Job ID
+              description: The ID of the job that produced the product
+            jobOwner:
+              type: string
+              title: Job owner
+              description: The user that launched the job
+            jobStartDate:
+              type: string
+              format: date-time
+              title: Job start date
+              description: The Job start date
+            jobEndDate:
+              type: string
+              format: date-time
+              title: Job end date
+              description: The Job end date
+            serviceName:
+              type: string
+              title: Service name
+              description: Name of the service that generated the product
+          required:
+            - intJobId
+            - jobOwner
+            - jobStartDate
+            - jobEndDate
+            - serviceName
+    CataloguePlatformProductCommon:
+      type: object
+      title: Catalogue platform product common metadata
+      allOf:
+        - $ref: '#/components/schemas/CatalogueProductBaseMetadata'
+        - type: object
+          properties:
+            collection:
+              type: string
+              title: Collection identifier
+            filename:
+              type: string
+              title: File name
+            owner:
+              type: string
+              title: Owner
+              description: The platform user that uploaded the file
+            title:
+              type: string
+              title: Product title
+            description:
+              type: string
+              title: Product description
+            published:
+              type: string
+              format: date-time
+              title: Publication date
+            extraParams:
+              type: object
+              title: Additional metadata
+              properties:
+                productStartTime:
+                  type: string
+                  format: date-time
+                  title: Product start time
+                productEndTime:
+                  type: string
+                  format: date-time
+                  title: Product end time
+            _links:
+              type: object
+              title: Product links
+              allOf:
+                - $ref: '#/components/schemas/PlatformFileOgcLinks'
+                - type: object
+                  properties:
+                    platformFile:
+                      type: object
+                      title: Platform file link
+                      properties:
+                        href:
+                          type: string
+                          format: uri
+                          pattern: ^https://iride-cyberitaly.space/secure/api/v2\.0/search/products/platform/[0-9]+
+                          example: https://iride-cyberitaly.space/secure/api/v2.0/search/products/platform/42
+                      required:
+                        - href
+                    download:
+                      type: object
+                      title: Download link
+                      properties:
+                        href:
+                          type: string
+                          format: uri
+                          pattern: ^https://iride-cyberitaly.space/secure/api/v2\.0/search/dl/platform/[0-9]+
+                          example: https://iride-cyberitaly.space/secure/api/v2.0/search/dl/platform/42
+                      required:
+                        - href
+          required:
+            - collection
+            - owner
+            - fileName
+            - published
+            - extraParams
+    CataloguePlatformReferenceDataCatalogueProduct:
+      type: object
+      title: Catalogue reference data product
+      description: Schema for `REF_DATA` catalogue product
+      allOf:
+        - $ref: '#/components/schemas/CataloguePlatformProductCommon'
+        - type: object
+          properties:
+            owner:
+              type: string
+              title: Owner
+              description: The platform user that uploaded the file
+          required:
+            - owner
+    CatalogueProduct:
+      type: object
+      title: Catalogue product metadata
+      properties:
+        id:
+          title: Record id
+          type: string
+          format: uuid
+        geometry:
+          $ref: '#/components/schemas/GeoJSONGeometry'
+        properties:
+          oneOf:
+            - $ref: '#/components/schemas/CatalogueCopernicusProduct'
+            - $ref: '#/components/schemas/CataloguePlatformProcessingOutputProduct'
+            - $ref: '#/components/schemas/CataloguePlatformReferenceDataCatalogueProduct'
+      required:
+        - id
+        - geometry
+        - properties
+    CatalogueProductBaseMetadata:
+      type: object
+      title: Catalogue product common metadata
+      properties:
+        productIdentifier:
+          type: string
+          title: Product identifier
+        platformUrl:
+          type: string
+          format: uri
+          title: Product URL
+          nullable: true
+          description: |-
+            The product internal URL. Shall be used as input for processings taking catalogue products as input.
+            If null the product cannot be used as input for processing.
+        productSource:
+          type: string
+          title: Product source
+        filesize:
+          type: number
+          title: Product file size in bytes
+      required:
+        - productIdentifier
+        - platformUrl
+    CatalogueSearchParameter:
+      type: object
+      title: Catalogue search parameter
+      oneOf:
+        - $ref: '#/components/schemas/CatalogueSearchParameterString'
+        - $ref: '#/components/schemas/CatalogueSearchParameterSelect'
+        - $ref: '#/components/schemas/CatalogueSearchParameterDateRange'
+        - $ref: '#/components/schemas/CatalogueSearchParameterPolygon'
+        - $ref: '#/components/schemas/CatalogueSearchParameterDynamic'
+    CatalogueSearchParameterCommonProps:
+      type: object
+      title: Catalogue search parameter common properties
+      properties:
+        title:
+          type: string
+          title: Parameter label
+        description:
+          type: string
+          title: Parameter description
+        onlyIf:
+          type: object
+          title: Dependency constraints
+          additionalProperties:
+            type: array
+            items:
+              type: string
+        required:
+          type: boolean
+          title: Required flag
+    CatalogueSearchParameterDateRange:
+      type: object
+      title: Catalogue date range parameter
+      description: Accept a pair of query parameter `[parameterID]Start` `[parameterID]End` in ISO 8601 format
+      allOf:
+        - $ref: '#/components/schemas/CatalogueSearchParameterCommonProps'
+        - type: object
+          properties:
+            type:
+              type: string
+              title: Date range type constant
+              enum:
+                - daterange
+          required:
+            - type
+    CatalogueSearchParameterDynamic:
+      type: object
+      title: Catalogue dynamic parameter
+      description: |-
+        A parameter of `select` type. To retrieve the list of allowed values a call to the
+        `search/parameter/{parameterName}` endpoint shall be made.
+      allOf:
+        - $ref: '#/components/schemas/CatalogueSearchParameterCommonProps'
+        - type: object
+          properties:
+            type:
+              type: string
+              title: Dynamic type constant
+              enum:
+                - dynamic
+          required:
+            - type
+    CatalogueSearchParameterPolygon:
+      type: object
+      title: Catalogue polygon parameter
+      description: A polygonal AOI parameter. Accept a WKT polygon string as value
+      allOf:
+        - $ref: '#/components/schemas/CatalogueSearchParameterCommonProps'
+        - type: object
+          properties:
+            type:
+              type: string
+              title: Polygon type constant
+              enum:
+                - polygon
+          required:
+            - type
+    CatalogueSearchParameterSelect:
+      type: object
+      title: Catalogue select parameter
+      allOf:
+        - $ref: '#/components/schemas/CatalogueSearchParameterCommonProps'
+        - type: object
+          properties:
+            type:
+              type: string
+              title: Select type constant
+              enum:
+                - select
+            allowed:
+              type: object
+              properties:
+                values:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      value:
+                        type: string
+                        title: Option value
+                        description: The option value. The value to use to populate the query parameter value
+                      title:
+                        type: string
+                        title: Option title
+                      description:
+                        type: string
+                        title: Option description
+                    required:
+                      - title
+            defaultValue:
+              type: string
+          required:
+            - type
+            - allowed
+    CatalogueSearchParameterString:
+      type: object
+      title: Catalogue string parameter
+      allOf:
+        - $ref: '#/components/schemas/CatalogueSearchParameterCommonProps'
+        - type: object
+          properties:
+            type:
+              type: string
+              title: Text type constant
+              enum:
+                - text
+          required:
+            - type
+    CatalogueSearchParameters:
+      type: object
+      title: Catalogue search parameters
+      description: The available search parameters. Each key can be mapped to a query parameter of the same name.
+      additionalProperties:
+        $ref: '#/components/schemas/CatalogueSearchParameter'
+      example:
+        catalogue:
+          type: select
+          title: Catalogue
+          allowed:
+            values:
+              - value: SATELLITE
+                label: Open Data
+              - value: REF_DATA
+                label: Reference
+          required: true
+        identifier:
+          type: text
+          title: Identifier
+        aoi:
+          type: polygon
+          title: AOI
+    CatalogueSearchResults:
+      type: object
+      title: Catalogue search results
+      properties:
+        page:
+          $ref: '#/components/schemas/PagingState'
+        features:
+          type: array
+          items:
+            $ref: '#/components/schemas/CatalogueProduct'
+      required:
+        - page
+        - features
     CollectionBaseMetadata:
       type: object
       title: Collection metadata
@@ -1587,21 +2129,40 @@ components:
             _links:
               $ref: '#/components/schemas/PlatformFileHalLinks'
     PlatformFileHalLinks:
-      type: object
-      title: Platform file HAL links
-      properties:
-        self:
-          type: object
-          title: Self link
-          description: A link to the created resource
+      allOf:
+        - $ref: '#/components/schemas/PlatformFileOgcLinks'
+        - type: object
+          title: Platform file HAL links
           properties:
-            href:
-              type: string
-              format: uri
-              pattern: ^https://iride-cyberitaly.space/secure/api/v2\.0/files/[0-9]+
-              example: https://iride-cyberitaly.space/secure/api/v2.0/files/42
+            self:
+              type: object
+              title: Self link
+              description: A link to the created resource
+              properties:
+                href:
+                  type: string
+                  format: uri
+                  pattern: ^https://iride-cyberitaly.space/secure/api/v2\.0/platformFiles/[0-9]+
+                  example: https://iride-cyberitaly.space/secure/api/v2.0/platformFiles/42
+              required:
+                - href
+            download:
+              type: object
+              title: Download link
+              properties:
+                href:
+                  type: string
+                  format: uri
+                  pattern: ^https://iride-cyberitaly.space/secure/api/v2\.0/platformFiles/[0-9]+/dl
+                  example: https://iride-cyberitaly.space/secure/api/v2.0/platformFiles/42/dl
+              required:
+                - href
           required:
-            - href
+            - self
+    PlatformFileOgcLinks:
+      type: object
+      title: Platform file OGC links
+      properties:
         wms:
           type: object
           title: WMS link
@@ -1628,8 +2189,6 @@ components:
               example: https://geoserver.iride-cyberitaly.space/geoserver/wfs?version=1.0.0&typeName=layerName
           required:
             - href
-      required:
-        - self
     PlatformFilePagelessSearchResults:
       type: object
       title: Platform file pageless search results
