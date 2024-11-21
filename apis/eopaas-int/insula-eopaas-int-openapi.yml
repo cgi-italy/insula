@@ -1052,11 +1052,38 @@ paths:
           $ref: '#/components/responses/Unauthorized'
         '500':
           $ref: '#/components/responses/InternalError'
-  /search/parameter/{parameterName}:
+  /search/parameter/{parameterId}:
     get:
       summary: Retrieve dynamic search parameter values
       operationId: getDynamicSearchParameterValues
       description: Retrieve allowed values for search parameter of `dynamic` type
+      tags:
+        - search
+      parameters:
+        - name: parameterId
+          in: path
+          description: Dynamic parameter ID
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Select option values
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CatalogueSearchParameterSelect'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalError'
+  /search/parameters/parameterName/{parameterName}:
+    get:
+      summary: Retrieve additional search parameters for a specific selection
+      operationId: getSearchParametersForSelection
+      description: |-
+        Retrieve additional search parameters available for a specific option of a `select` type parameter.
+        Check the `parameterName` option tag in the `Catalogue select parameter` schema.
       tags:
         - search
       parameters:
@@ -1068,11 +1095,11 @@ paths:
             type: string
       responses:
         '200':
-          description: List of search parameters
+          description: List of additional search parameters for the specified select option value
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/CatalogueSearchParameterSelect'
+                $ref: '#/components/schemas/CatalogueSearchParameters'
         '401':
           $ref: '#/components/responses/Unauthorized'
         '500':
@@ -1319,10 +1346,28 @@ components:
       title: Catalogue search parameter
       oneOf:
         - $ref: '#/components/schemas/CatalogueSearchParameterString'
+        - $ref: '#/components/schemas/CatalogueSearchParameterInt'
         - $ref: '#/components/schemas/CatalogueSearchParameterSelect'
+        - $ref: '#/components/schemas/CatalogueSearchParameterDate'
         - $ref: '#/components/schemas/CatalogueSearchParameterDateRange'
         - $ref: '#/components/schemas/CatalogueSearchParameterPolygon'
+        - $ref: '#/components/schemas/CatalogueSearchParameterBbox'
         - $ref: '#/components/schemas/CatalogueSearchParameterDynamic'
+    CatalogueSearchParameterBbox:
+      type: object
+      title: Catalogue bbox parameter
+      description: 'A bbox search parameter. Shall be sent as comma separated bbox corners in the form: `minLon,minLat,maxLon,maxLat`.'
+      allOf:
+        - $ref: '#/components/schemas/CatalogueSearchParameterCommonProps'
+        - type: object
+          properties:
+            type:
+              type: string
+              title: BBox type constant
+              enum:
+                - bbox
+          required:
+            - type
     CatalogueSearchParameterCommonProps:
       type: object
       title: Catalogue search parameter common properties
@@ -1343,6 +1388,21 @@ components:
         required:
           type: boolean
           title: Required flag
+    CatalogueSearchParameterDate:
+      type: object
+      title: Catalogue date parameter
+      description: A date parameter. Shall be populated with an ISO8601 string.
+      allOf:
+        - $ref: '#/components/schemas/CatalogueSearchParameterCommonProps'
+        - type: object
+          properties:
+            type:
+              type: string
+              title: Date type constant
+              enum:
+                - date
+          required:
+            - type
     CatalogueSearchParameterDateRange:
       type: object
       title: Catalogue date range parameter
@@ -1373,6 +1433,22 @@ components:
               title: Dynamic type constant
               enum:
                 - dynamic
+          required:
+            - type
+    CatalogueSearchParameterInt:
+      type: object
+      title: Catalogue integer parameter
+      allOf:
+        - $ref: '#/components/schemas/CatalogueSearchParameterCommonProps'
+        - type: object
+          properties:
+            type:
+              type: string
+              title: Int type constant
+              enum:
+                - int
+            defaultValue:
+              type: integer
           required:
             - type
     CatalogueSearchParameterPolygon:
@@ -1420,6 +1496,12 @@ components:
                       description:
                         type: string
                         title: Option description
+                      parameterName:
+                        type: string
+                        title: Additional query parameters name
+                        description: |-
+                          When provided it means that the selected item offers additional search parameters, that can be
+                          retrieved from the `search/parameters/parameterName/{parameterName}` endpoint
                     required:
                       - value
             defaultValue:
