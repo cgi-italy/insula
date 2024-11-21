@@ -1421,7 +1421,7 @@ components:
                         type: string
                         title: Option description
                     required:
-                      - title
+                      - value
             defaultValue:
               type: string
           required:
