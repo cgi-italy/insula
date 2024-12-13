@@ -1,4 +1,4 @@
-## Insula Platform APIs (Cyberitaly)
+## Insula APIs (Cyberitaly)
 
 - [OpenAPI yaml specifications](insula-cyberitaly-openapi.yml)
 - [Swagger UI page](insula-cyberitaly-swagger-ui.html)

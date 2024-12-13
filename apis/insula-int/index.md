@@ -1,4 +1,4 @@
-## Insula Platform APIs (Insula Integration (CGI Engineering only))
+## Insula APIs (Insula Integration (CGI Engineering only))
 
 - [OpenAPI yaml specifications](insula-insula-int-openapi.yml)
 - [Swagger UI page](insula-insula-int-swagger-ui.html)

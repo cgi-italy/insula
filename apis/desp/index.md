@@ -1,4 +1,4 @@
-## Insula Platform APIs (DestinE Core Platform)
+## Insula APIs (DestinE Core Platform)
 
 - [OpenAPI yaml specifications](insula-desp-openapi.yml)
 - [Swagger UI page](insula-desp-swagger-ui.html)

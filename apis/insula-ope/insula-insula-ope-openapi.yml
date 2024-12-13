@@ -1,6 +1,6 @@
 openapi: 3.0.3
 info:
-  title: Insula Platform APIs
+  title: Insula APIs
   version: '2.0'
 servers:
   - url: https://insula.earth/secure/api/v2.0

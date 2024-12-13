@@ -1,4 +1,4 @@
-## Insula Platform APIs (FoodSecurity Explorer)
+## Insula APIs (FoodSecurity Explorer)
 
 - [OpenAPI yaml specifications](insula-foodsecurity-openapi.yml)
 - [Swagger UI page](insula-foodsecurity-swagger-ui.html)

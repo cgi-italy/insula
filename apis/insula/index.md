@@ -1,4 +1,4 @@
-## Insula Platform APIs (Insula)
+## Insula APIs (Insula)
 
 - [OpenAPI yaml specifications](insula-insula-openapi.yml)
 - [Swagger UI page](insula-insula-swagger-ui.html)

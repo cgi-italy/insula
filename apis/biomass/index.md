@@ -1,4 +1,4 @@
-## Insula Platform APIs (Biomass)
+## Insula APIs (Biomass)
 
 - [OpenAPI yaml specifications](insula-biomass-openapi.yml)
 - [Swagger UI page](insula-biomass-swagger-ui.html)
