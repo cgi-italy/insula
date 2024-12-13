@@ -1,2 +1,4 @@
 include :
   - _static
+  - _images
+  - _sources
