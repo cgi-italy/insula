@@ -2,7 +2,7 @@
 
 ### Active instances
 
- - [Insula](insula/index.md)
+ - [Insula](insula-ope/index.md)
  - [FoodSecurity Explorer](foodsecurity/index.md)
  - [Cyberitaly](cyberitaly/index.md)
  - [Biomass](biomass/index.md)
