@@ -3,8 +3,8 @@ info:
   title: Insula Platform APIs
   version: '2.0'
 servers:
-  - url: https://ope.insula.earth/secure/api/v2.0
-    description: Operational environment
+  - url: https://int.insula.earth/secure/api/v2.0
+    description: Insula Integration (CGI Engineering only)
 security:
   - oauth2Password:
       - openid
@@ -435,19 +435,19 @@ paths:
         - in: query
           name: collection
           required: false
-          description: The parent collection. Must be provided as a reference uri in the form of https://ope.insula.earth/secure/api/v2.0/collections/{collectionId}
+          description: The parent collection. Must be provided as a reference uri in the form of https://int.insula.earth/secure/api/v2.0/collections/{collectionId}
           schema:
             type: string
             format: uri
-            pattern: ^https://ope.insula.earth/secure/api/v2\.0/collections/[0-9]+$
+            pattern: ^https://int.insula.earth/secure/api/v2\.0/collections/[0-9]+$
         - in: query
           name: job
           required: false
-          description: The job that generated the file. Must be provided as a reference uri in the form of https://ope.insula.earth/secure/api/v2.0/jobs/{jobId}
+          description: The job that generated the file. Must be provided as a reference uri in the form of https://int.insula.earth/secure/api/v2.0/jobs/{jobId}
           schema:
             type: string
             format: uri
-            pattern: ^https://ope.insula.earth/secure/api/v2\.0/jobs/[0-9]+$
+            pattern: ^https://int.insula.earth/secure/api/v2\.0/jobs/[0-9]+$
         - $ref: '#/components/parameters/platformFileProjectionParam'
         - $ref: '#/components/parameters/ownerParam'
         - $ref: '#/components/parameters/notOwnerParam'
@@ -506,10 +506,10 @@ paths:
                   title: Service
                   description: |-
                     The service to run. It should be a reference URI in the form
-                    https://ope.insula.earth/secure/api/v2.0/services/{serviceId}
+                    https://int.insula.earth/secure/api/v2.0/services/{serviceId}
                   format: uri
-                  pattern: ^https://ope.insula.earth/secure/api/v2\.0/services/[0-9]+$
-                  example: https://ope.insula.earth/secure/api/v2.0/services/66
+                  pattern: ^https://int.insula.earth/secure/api/v2\.0/services/[0-9]+$
+                  example: https://int.insula.earth/secure/api/v2.0/services/66
                 label:
                   type: string
                   title: Label
@@ -1263,8 +1263,8 @@ components:
                         href:
                           type: string
                           format: uri
-                          pattern: ^https://ope.insula.earth/secure/api/v2\.0/search/products/platform/[0-9]+
-                          example: https://ope.insula.earth/secure/api/v2.0/search/products/platform/42
+                          pattern: ^https://int.insula.earth/secure/api/v2\.0/search/products/platform/[0-9]+
+                          example: https://int.insula.earth/secure/api/v2.0/search/products/platform/42
                       required:
                         - href
                     download:
@@ -1274,8 +1274,8 @@ components:
                         href:
                           type: string
                           format: uri
-                          pattern: ^https://ope.insula.earth/secure/api/v2\.0/search/dl/platform/[0-9]+
-                          example: https://ope.insula.earth/secure/api/v2.0/search/dl/platform/42
+                          pattern: ^https://int.insula.earth/secure/api/v2\.0/search/dl/platform/[0-9]+
+                          example: https://int.insula.earth/secure/api/v2.0/search/dl/platform/42
                       required:
                         - href
           required:
@@ -1596,8 +1596,8 @@ components:
                     href:
                       type: string
                       format: uri
-                      pattern: ^https://ope.insula.earth/secure/api/v2\.0/collections/[0-9]+
-                      example: https://ope.insula.earth/secure/api/v2.0/collections/42
+                      pattern: ^https://int.insula.earth/secure/api/v2\.0/collections/[0-9]+
+                      example: https://int.insula.earth/secure/api/v2.0/collections/42
                   required:
                     - href
               required:
@@ -1869,7 +1869,7 @@ components:
                 href:
                   type: string
                   format: uri
-                  pattern: ^https://ope.insula.earth/secure/api/v2\.0/jobConfigs/[0-9]+$
+                  pattern: ^https://int.insula.earth/secure/api/v2\.0/jobConfigs/[0-9]+$
       required:
         - id
         - inputs
@@ -2224,8 +2224,8 @@ components:
                 href:
                   type: string
                   format: uri
-                  pattern: ^https://ope.insula.earth/secure/api/v2\.0/platformFiles/[0-9]+
-                  example: https://ope.insula.earth/secure/api/v2.0/platformFiles/42
+                  pattern: ^https://int.insula.earth/secure/api/v2\.0/platformFiles/[0-9]+
+                  example: https://int.insula.earth/secure/api/v2.0/platformFiles/42
               required:
                 - href
             download:
@@ -2235,8 +2235,8 @@ components:
                 href:
                   type: string
                   format: uri
-                  pattern: ^https://ope.insula.earth/secure/api/v2\.0/platformFiles/[0-9]+/dl
-                  example: https://ope.insula.earth/secure/api/v2.0/platformFiles/42/dl
+                  pattern: ^https://int.insula.earth/secure/api/v2\.0/platformFiles/[0-9]+/dl
+                  example: https://int.insula.earth/secure/api/v2.0/platformFiles/42/dl
               required:
                 - href
           required:
@@ -2255,7 +2255,7 @@ components:
             href:
               type: string
               format: uri
-              example: https://geoserver.ope.insula.earth/geoserver/wms?version=1.1.0&layers=layerName
+              example: https://geoserver.int.insula.earth/geoserver/wms?version=1.1.0&layers=layerName
           required:
             - href
         wfs:
@@ -2268,7 +2268,7 @@ components:
             href:
               type: string
               format: uri
-              example: https://geoserver.ope.insula.earth/geoserver/wfs?version=1.0.0&typeName=layerName
+              example: https://geoserver.int.insula.earth/geoserver/wfs?version=1.0.0&typeName=layerName
           required:
             - href
     PlatformFilePagelessSearchResults:
@@ -2506,7 +2506,7 @@ components:
       type: oauth2
       flows:
         password:
-          tokenUrl: https://identity.ope.insula.earth/realms/eopaas/protocol/openid-connect/token
+          tokenUrl: https://identity.int.insula.earth/realms/eopaas/protocol/openid-connect/token
           scopes:
             openid: api access
   parameters:
@@ -2536,21 +2536,21 @@ components:
       in: query
       name: notOwner
       required: false
-      description: Show all resources not owned by a user. Must be provided as a reference uri in the form of https://ope.insula.earth/secure/api/v2.0/users/{userId}
+      description: Show all resources not owned by a user. Must be provided as a reference uri in the form of https://int.insula.earth/secure/api/v2.0/users/{userId}
       schema:
         type: string
         format: uri-template
-        pattern: ^https://ope.insula.earth/secure/api/v2\.0/users/[0-9]+$
+        pattern: ^https://int.insula.earth/secure/api/v2\.0/users/[0-9]+$
     ownerParam:
       in: query
       name: owner
       required: false
-      description: The owner of the resource. Must be provided as a reference uri in the form of https://ope.insula.earth/secure/api/v2.0/users/{userId}
+      description: The owner of the resource. Must be provided as a reference uri in the form of https://int.insula.earth/secure/api/v2.0/users/{userId}
       schema:
         type: string
         title: Resource owner
         format: uri
-        pattern: ^https://ope.insula.earth/secure/api/v2\.0/users/[0-9]+$
+        pattern: ^https://int.insula.earth/secure/api/v2\.0/users/[0-9]+$
     pageNumberParam:
       in: query
       name: page

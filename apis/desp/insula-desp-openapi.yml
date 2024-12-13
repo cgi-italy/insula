@@ -1,0 +1,2652 @@
+openapi: 3.0.3
+info:
+  title: Insula Platform APIs
+  version: '2.0'
+servers:
+  - url: https://insula.destine.eu/secure/api/v2.0
+    description: DestinE Core Platform
+security:
+  - oauth2Password:
+      - openid
+tags:
+  - name: collections
+    description: Platform collection related operations. A collection is a container for files of a certain type.
+  - name: platformFiles
+    description: Platform files related operations.
+  - name: jobs
+    description: Processing jobs related operations.
+  - name: search
+    description: Catalogue search.
+paths:
+  /collections:
+    get:
+      summary: Get platform collections.
+      operationId: getCollections
+      tags:
+        - collections
+      parameters:
+        - $ref: '#/components/parameters/collectionProjectionParam'
+        - $ref: '#/components/parameters/pageNumberParam'
+        - $ref: '#/components/parameters/pageSizeParam'
+      responses:
+        '200':
+          description: A list of platform collections
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CollectionSearchResults'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalError'
+    post:
+      summary: Create a platform collection
+      operationId: createCollection
+      tags:
+        - collections
+      requestBody:
+        description: |-
+          The collection metadata. Regarding the 'fileType' field, use:
+          - REFERENCE_DATA: For a collection where local data can be uploaded through the platformFiles APIs
+          - OUTPUT_PRODUCT: For collection used for storing the results of a processing
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CollectionBaseMetadata'
+            example:
+              name: My Collection
+              fileType: REFERENCE_DATA
+              productsType: mixed
+      responses:
+        '201':
+          description: Collection succesfully created. ID of the resource can be found in the "self" href of the "_links" object
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CollectionCreateOrUpdateResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '409':
+          description: Conflict
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+        '500':
+          $ref: '#/components/responses/InternalError'
+  /collections/{collectionId}:
+    get:
+      summary: Get collection metadata.
+      operationId: getCollectionById
+      tags:
+        - collections
+      parameters:
+        - name: collectionId
+          in: path
+          description: Collection ID
+          required: true
+          schema:
+            $ref: '#/components/schemas/PlatformIdentifier'
+        - $ref: '#/components/parameters/collectionProjectionParam'
+      responses:
+        '200':
+          description: The collection metadata
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: '#/components/schemas/CollectionShortProjection'
+                  - $ref: '#/components/schemas/CollectionDetailedProjection'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalError'
+    patch:
+      summary: Update a platform collection
+      operationId: updateCollection
+      tags:
+        - collections
+      parameters:
+        - name: collectionId
+          in: path
+          description: Collection ID
+          required: true
+          schema:
+            $ref: '#/components/schemas/PlatformIdentifier'
+      requestBody:
+        description: The collection metadata.
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  title: Collection name
+                  type: string
+                description:
+                  title: Collection description
+                  type: string
+                productsType:
+                  title: Collection product types
+                  description: Define the type of products contained in the collections. A free text field that can be used for filtering in search
+                  type: string
+      responses:
+        '200':
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CollectionCreateOrUpdateResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalError'
+    delete:
+      summary: Delete platform collection
+      operationId: deleteCollection
+      tags:
+        - collections
+      parameters:
+        - name: collectionId
+          in: path
+          description: Collection ID
+          required: true
+          schema:
+            $ref: '#/components/schemas/PlatformIdentifier'
+      responses:
+        '204':
+          description: Deleted
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalError'
+  /collections/search/parametricFind:
+    get:
+      summary: Search for platform collections.
+      operationId: searchCollections
+      description: Allow to search for platform collections by text, file type, product type, owner
+      tags:
+        - collections
+      parameters:
+        - in: query
+          name: filter
+          description: The search string
+          schema:
+            type: string
+        - in: query
+          name: fileType
+          required: false
+          description: The collection file type
+          schema:
+            $ref: '#/components/schemas/PlatformFileType'
+        - in: query
+          name: productsType
+          required: false
+          description: A list of collection product types
+          explode: false
+          schema:
+            type: array
+            items:
+              type: string
+        - in: query
+          name: notProductsType
+          required: false
+          description: A list of collection product types to omit from the result
+          explode: false
+          schema:
+            type: array
+            items:
+              type: string
+        - $ref: '#/components/parameters/collectionProjectionParam'
+        - $ref: '#/components/parameters/ownerParam'
+        - $ref: '#/components/parameters/notOwnerParam'
+        - $ref: '#/components/parameters/pageNumberParam'
+        - $ref: '#/components/parameters/pageSizeParam'
+      responses:
+        '200':
+          description: A list of platform collections
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CollectionSearchResults'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalError'
+  /platformFiles:
+    get:
+      summary: Get platform files.
+      operationId: getPlatformFiles
+      tags:
+        - platformFiles
+      parameters:
+        - $ref: '#/components/parameters/platformFileProjectionParam'
+        - $ref: '#/components/parameters/pageNumberParam'
+        - $ref: '#/components/parameters/pageSizeParam'
+      responses:
+        '200':
+          description: A list of platform files
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlatformFileSearchResults'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalError'
+  /platformFiles/{platformFileId}:
+    get:
+      summary: Get platform file metadata.
+      operationId: getPlatformFileById
+      tags:
+        - platformFiles
+      parameters:
+        - name: platformFileId
+          in: path
+          description: Platoform file ID
+          required: true
+          schema:
+            $ref: '#/components/schemas/PlatformIdentifier'
+        - $ref: '#/components/parameters/platformFileProjectionParam'
+      responses:
+        '200':
+          description: The platform file metadata
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: '#/components/schemas/PlatformFileShortProjection'
+                  - $ref: '#/components/schemas/PlatformFileDetailedProjection'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalError'
+    delete:
+      summary: Delete platform file
+      operationId: deletePlatformFile
+      tags:
+        - platformFiles
+      parameters:
+        - name: platformFileId
+          in: path
+          description: Platform file ID
+          required: true
+          schema:
+            $ref: '#/components/schemas/PlatformIdentifier'
+      responses:
+        '204':
+          description: Deleted
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalError'
+  /platformFiles/{platformFileId}/dl:
+    get:
+      summary: Download platform file.
+      operationId: downloadPlatformFile
+      tags:
+        - platformFiles
+      parameters:
+        - name: platformFileId
+          in: path
+          description: Platoform file ID
+          required: true
+          schema:
+            $ref: '#/components/schemas/PlatformIdentifier'
+      responses:
+        '200':
+          description: The platform file content
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+              example: ''
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalError'
+  /platformFiles/{platformFileId}/collection:
+    get:
+      summary: Get platform file collection.
+      operationId: getPlatformFileCollection
+      tags:
+        - platformFiles
+      parameters:
+        - name: platformFileId
+          in: path
+          description: Platoform file ID
+          required: true
+          schema:
+            $ref: '#/components/schemas/PlatformIdentifier'
+        - $ref: '#/components/parameters/collectionProjectionParam'
+      responses:
+        '200':
+          description: The platform file collection
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: '#/components/schemas/CollectionShortProjection'
+                  - $ref: '#/components/schemas/CollectionDetailedProjection'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalError'
+  /platformFiles/{platformFileId}/jobs:
+    get:
+      summary: Get platform file processing jobs.
+      operationId: getPlatformFileJob
+      tags:
+        - platformFiles
+      parameters:
+        - name: platformFileId
+          in: path
+          description: Platoform file ID
+          required: true
+          schema:
+            $ref: '#/components/schemas/PlatformIdentifier'
+        - $ref: '#/components/parameters/jobProjectionParam'
+      responses:
+        '200':
+          description: The platform file jobs
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JobPagelessSearchResults'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalError'
+  /platformFiles/refData:
+    post:
+      summary: Upload a platform file into a reference collection
+      operationId: uploadRefData
+      tags:
+        - platformFiles
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PlatformFileUploadRequest'
+      responses:
+        '201':
+          description: File succesfully uploaded
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlatformFileUploadResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '409':
+          description: Conflict
+          content:
+            text/plain:
+              schema:
+                type: string
+        '500':
+          $ref: '#/components/responses/InternalError'
+  /platformFiles/search/parametricFind:
+    get:
+      summary: Search for platform files.
+      operationId: searchPlatformFiles
+      description: Allow to search for platform files by text, collection, file type, job and/or owner
+      tags:
+        - platformFiles
+      parameters:
+        - in: query
+          name: filter
+          description: The search string
+          schema:
+            type: string
+        - in: query
+          name: type
+          required: false
+          description: The collection file type
+          schema:
+            $ref: '#/components/schemas/PlatformFileType'
+        - in: query
+          name: collection
+          required: false
+          description: The parent collection. Must be provided as a reference uri in the form of https://insula.destine.eu/secure/api/v2.0/collections/{collectionId}
+          schema:
+            type: string
+            format: uri
+            pattern: ^https://insula.destine.eu/secure/api/v2\.0/collections/[0-9]+$
+        - in: query
+          name: job
+          required: false
+          description: The job that generated the file. Must be provided as a reference uri in the form of https://insula.destine.eu/secure/api/v2.0/jobs/{jobId}
+          schema:
+            type: string
+            format: uri
+            pattern: ^https://insula.destine.eu/secure/api/v2\.0/jobs/[0-9]+$
+        - $ref: '#/components/parameters/platformFileProjectionParam'
+        - $ref: '#/components/parameters/ownerParam'
+        - $ref: '#/components/parameters/notOwnerParam'
+        - $ref: '#/components/parameters/pageNumberParam'
+        - $ref: '#/components/parameters/pageSizeParam'
+        - $ref: '#/components/parameters/sortParam'
+      responses:
+        '200':
+          description: A list of platform collections
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CollectionSearchResults'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalError'
+  /jobConfigs:
+    get:
+      summary: Get processing job configs.
+      operationId: getJobConfigs
+      tags:
+        - jobs
+      parameters:
+        - $ref: '#/components/parameters/pageNumberParam'
+        - $ref: '#/components/parameters/pageSizeParam'
+      responses:
+        '200':
+          description: A list of processing job configs
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JobConfigSearchResults'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalError'
+    post:
+      summary: Create a processing job configuration
+      operationId: createJobConfig
+      tags:
+        - jobs
+      description: Create the configuration for a processing job. This is the first step required to launch a processing job
+      requestBody:
+        description: The processing job configuration parameters
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                inputs:
+                  $ref: '#/components/schemas/JobConfigInputs'
+                service:
+                  type: string
+                  title: Service
+                  description: |-
+                    The service to run. It should be a reference URI in the form
+                    https://insula.destine.eu/secure/api/v2.0/services/{serviceId}
+                  format: uri
+                  pattern: ^https://insula.destine.eu/secure/api/v2\.0/services/[0-9]+$
+                  example: https://insula.destine.eu/secure/api/v2.0/services/66
+                label:
+                  type: string
+                  title: Label
+                  description: An optional label to give to the processing job
+              required:
+                - inputs
+                - service
+      responses:
+        '201':
+          description: Job config succesfully created.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JobConfig'
+          links:
+            LaunchJob:
+              operationId: launchJob
+              parameters:
+                jobConfigId: $response.body#/id
+              description: |
+                The `id` value returned in the response can be used to launch the job through `POST /jobConfigs/{jobConfigId}/launch`.
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalError'
+  /jobConfigs/{jobConfigId}:
+    get:
+      summary: Get processing job config metadata.
+      operationId: getJobConfigById
+      tags:
+        - jobs
+      parameters:
+        - name: jobConfigId
+          in: path
+          description: Job config ID
+          required: true
+          schema:
+            $ref: '#/components/schemas/PlatformIdentifier'
+      responses:
+        '200':
+          description: The job config metadata
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JobConfig'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalError'
+    delete:
+      summary: Delete a job config
+      operationId: deleteJobConfig
+      tags:
+        - jobs
+      parameters:
+        - name: jobConfigId
+          in: path
+          description: Job config ID
+          required: true
+          schema:
+            $ref: '#/components/schemas/PlatformIdentifier'
+      responses:
+        '204':
+          description: Deleted
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalError'
+  /jobConfigs/{jobConfigId}/launch:
+    post:
+      summary: Launch a processing job.
+      operationId: launchJob
+      tags:
+        - jobs
+      parameters:
+        - name: jobConfigId
+          in: path
+          description: Job config ID
+          required: true
+          schema:
+            $ref: '#/components/schemas/PlatformIdentifier'
+      responses:
+        '200':
+          description: Job succesfully launched
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JobBaseMetadata'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalError'
+  /jobs:
+    get:
+      summary: Get processing jobs.
+      operationId: getJobs
+      tags:
+        - jobs
+      parameters:
+        - $ref: '#/components/parameters/jobProjectionParam'
+        - $ref: '#/components/parameters/pageNumberParam'
+        - $ref: '#/components/parameters/pageSizeParam'
+      responses:
+        '200':
+          description: A list of processing jobs
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JobSearchResults'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalError'
+  /jobs/{jobId}:
+    get:
+      summary: Get processing job metadata.
+      operationId: getJobById
+      tags:
+        - jobs
+      parameters:
+        - name: jobId
+          in: path
+          description: Processing job ID
+          required: true
+          schema:
+            $ref: '#/components/schemas/PlatformIdentifier'
+        - $ref: '#/components/parameters/jobProjectionParam'
+      responses:
+        '200':
+          description: The processing job metadata
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: '#/components/schemas/JobShortProjection'
+                  - $ref: '#/components/schemas/JobDetailedProjection'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalError'
+  /jobs/{jobId}/config:
+    get:
+      summary: Get processing job config.
+      operationId: getJobConfigFromJob
+      tags:
+        - jobs
+      parameters:
+        - name: jobId
+          in: path
+          description: Processing job ID
+          required: true
+          schema:
+            $ref: '#/components/schemas/PlatformIdentifier'
+      responses:
+        '200':
+          description: Processing job config
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JobConfig'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalError'
+  /jobs/{jobId}/logs:
+    get:
+      summary: Get processing job logs.
+      operationId: getJobLogs
+      tags:
+        - jobs
+      parameters:
+        - name: jobId
+          in: path
+          description: Processing job ID
+          required: true
+          schema:
+            $ref: '#/components/schemas/PlatformIdentifier'
+      responses:
+        '200':
+          description: Processing job logs
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JobLogs'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalError'
+  /jobs/{jobId}/outputFiles:
+    get:
+      summary: Retrieve processing job outputs.
+      operationId: getJobOutputFiles
+      tags:
+        - jobs
+      parameters:
+        - name: jobId
+          in: path
+          description: Processing job ID
+          required: true
+          schema:
+            $ref: '#/components/schemas/PlatformIdentifier'
+        - $ref: '#/components/parameters/platformFileProjectionParam'
+      responses:
+        '200':
+          description: Processing job output files
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlatformFilePagelessSearchResults'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalError'
+  /jobs/{jobId}/parentJob:
+    get:
+      summary: Get processing job parent.
+      operationId: getParentJob
+      description: |-
+        Retrieve the processing job parent. Applicable only to child jobs 
+        (subtasks of a `PARALLEL_PROCESSOR` service or of a systematic processing)
+      tags:
+        - jobs
+      parameters:
+        - name: jobId
+          in: path
+          description: Processing job ID
+          required: true
+          schema:
+            $ref: '#/components/schemas/PlatformIdentifier'
+        - $ref: '#/components/parameters/jobProjectionParam'
+      responses:
+        '200':
+          description: Processing job parent
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: '#/components/schemas/JobShortProjection'
+                  - $ref: '#/components/schemas/JobDetailedProjection'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalError'
+  /jobs/{jobId}/subJobs:
+    get:
+      summary: Get processing job subjobs.
+      operationId: getSubjobs
+      description: |-
+        Retrieve the list of subjobs. Applicable only to parent jobs 
+        (associated to a `PARALLEL_PROCESSOR` service or to a systematic processing)
+      tags:
+        - jobs
+      parameters:
+        - name: jobId
+          in: path
+          description: Processing job ID
+          required: true
+          schema:
+            $ref: '#/components/schemas/PlatformIdentifier'
+        - $ref: '#/components/parameters/jobProjectionParam'
+      responses:
+        '200':
+          description: Processing job subjobs
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JobPagelessSearchResults'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalError'
+  /jobs/{jobId}/cancel:
+    get:
+      summary: Cancel processing job.
+      operationId: cancelJob
+      tags:
+        - jobs
+      parameters:
+        - name: jobId
+          in: path
+          description: Processing job ID
+          required: true
+          schema:
+            $ref: '#/components/schemas/PlatformIdentifier'
+      responses:
+        '200':
+          description: Processing canceled
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalError'
+  /jobs/{jobId}/relaunchFailed:
+    post:
+      summary: Retry failed processing job.
+      operationId: retryJob
+      tags:
+        - jobs
+      parameters:
+        - name: jobId
+          in: path
+          description: Processing job ID
+          required: true
+          schema:
+            $ref: '#/components/schemas/PlatformIdentifier'
+      responses:
+        '200':
+          description: Processing relaunched
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalError'
+  /jobs/{jobId}/terminate:
+    post:
+      summary: Terminate processing job.
+      operationId: terminateJob
+      description: Terminate a running interactive application. Applicable only to job associated to `APPLICATION` services.
+      tags:
+        - jobs
+      parameters:
+        - name: jobId
+          in: path
+          description: Processing job ID
+          required: true
+          schema:
+            $ref: '#/components/schemas/PlatformIdentifier'
+      responses:
+        '204':
+          description: Processing terminated
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalError'
+  /jobs/search/parametricFind:
+    get:
+      summary: Search for processing jobs.
+      operationId: searchJobs
+      description: Allow to search for processing jobs
+      tags:
+        - jobs
+      parameters:
+        - in: query
+          name: filter
+          description: The search string
+          schema:
+            type: string
+        - in: query
+          name: status
+          required: false
+          description: A list of job states
+          explode: false
+          schema:
+            type: array
+            items:
+              $ref: '#/components/schemas/JobStatus'
+        - in: query
+          name: parentId
+          required: false
+          description: |-
+            Parent job ID. Retrieve subjobs of the job with the provided ID.
+            If omitted only non subjobs jobs (parent jobs or childless jobs) are returned
+          schema:
+            $ref: '#/components/schemas/PlatformIdentifier'
+        - in: query
+          name: startDateTime
+          required: false
+          description: Job start date
+          schema:
+            type: string
+            format: date-time
+        - in: query
+          name: endDateTime
+          required: false
+          description: Job end date
+          schema:
+            type: string
+            format: date-time
+        - in: query
+          name: inputIdentifier
+          required: false
+          description: Input identifier. Search for jobs where one of the inputs matches the provided string
+          schema:
+            type: string
+        - $ref: '#/components/parameters/jobProjectionParam'
+        - $ref: '#/components/parameters/ownerParam'
+        - $ref: '#/components/parameters/notOwnerParam'
+        - $ref: '#/components/parameters/pageNumberParam'
+        - $ref: '#/components/parameters/pageSizeParam'
+        - $ref: '#/components/parameters/sortParam'
+      responses:
+        '200':
+          description: A list of processing jobs
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JobSearchResults'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalError'
+  /search:
+    get:
+      summary: Search for catalogue products
+      description: Perform a catalogue search.
+      operationId: catalogueSearch
+      tags:
+        - search
+      parameters:
+        - in: query
+          name: catalogue
+          description: The query catalogue
+          schema:
+            type: string
+          examples:
+            referenceData:
+              summary: User uploaded data
+              value: REF_DATA
+            outputProducts:
+              summary: Processing outputs
+              value: PLATFORM_PRODUCTS
+            openData:
+              summary: Copernicus EO data
+              value: SATELLITE
+          required: true
+        - in: query
+          name: collection
+          description: |-
+            The processing output collection identifier.
+            Mandatory if the catalogue parameter is set to `PLATFORM_PRODUCTS`. Unused otherwise
+          schema:
+            type: string
+        - in: query
+          name: refDataCollection
+          description: |-
+            The reference collection identifier.
+            Mandatory if the catalogue parameter is set to `REF_DATA`. Unused otherwise
+          schema:
+            type: string
+        - in: query
+          name: aoi
+          description: The area of interest, expressed as a WKT polygon string.
+          schema:
+            type: string
+            format: wkt
+        - in: query
+          name: productDateStart
+          description: The product start date
+          schema:
+            type: string
+            format: date-time
+        - in: query
+          name: productDateEnd
+          description: The product end date
+          schema:
+            type: string
+            format: date-time
+        - in: query
+          name: identifier
+          description: The product identifier
+          schema:
+            type: string
+        - in: query
+          name: additionalParams
+          description: |-
+            Additional query parameters.
+            The full list of available query parameters can be retrieved from the `search/parameters` endpoint.
+          schema:
+            type: object
+            additionalProperties:
+              type: string
+              pattern: ^[A-Za-z][A-Za-z0-9]*$
+            example:
+              additionalParam1: additionalValue1
+              additionalParam2: additionalValue2
+        - in: query
+          name: resultsPerPage
+          description: Page size
+          schema:
+            type: integer
+            default: 20
+        - $ref: '#/components/parameters/pageNumberParam'
+      responses:
+        '200':
+          description: A list of catalogue results
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CatalogueSearchResults'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalError'
+  /search/parameters:
+    get:
+      summary: Retrieve search parameters
+      operationId: getSearchParameters
+      description: Retrieve description of available search parameters
+      tags:
+        - search
+      parameters:
+        - in: query
+          name: resolveAll
+          description: If set to false, it will prevent expanding all dynamic parameters (e.g. select options), providing a faster response
+          schema:
+            type: boolean
+            default: true
+      responses:
+        '200':
+          description: List of search parameters
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CatalogueSearchParameters'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalError'
+  /search/parameter/{parameterId}:
+    get:
+      summary: Retrieve dynamic search parameter values
+      operationId: getDynamicSearchParameterValues
+      description: Retrieve allowed values for search parameter of `dynamic` type
+      tags:
+        - search
+      parameters:
+        - name: parameterId
+          in: path
+          description: Dynamic parameter ID
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Select option values
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CatalogueSearchParameterSelect'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalError'
+  /search/parameters/parameterName/{parameterName}:
+    get:
+      summary: Retrieve additional search parameters for a specific selection
+      operationId: getSearchParametersForSelection
+      description: |-
+        Retrieve additional search parameters available for a specific option of a `select` type parameter.
+        Check the `parameterName` option tag in the `Catalogue select parameter` schema.
+      tags:
+        - search
+      parameters:
+        - name: parameterName
+          in: path
+          description: Dynamic parameter name
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: List of additional search parameters for the specified select option value
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CatalogueSearchParameters'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalError'
+components:
+  schemas:
+    CatalogueCopernicusProduct:
+      type: object
+      title: Catalogue copernicus product
+      description: Schema for `SATELLITE` catalogue product
+      allOf:
+        - $ref: '#/components/schemas/CatalogueProductBaseMetadata'
+        - type: object
+          properties:
+            extraParams:
+              type: object
+              title: Additional metadata
+              properties:
+                title:
+                  type: string
+                  title: Product title
+                description:
+                  type: string
+                  title: Product description
+                collection:
+                  type: string
+                  title: Product collection
+                platform:
+                  type: string
+                  title: Platform/Satellite short name.
+                instrument:
+                  type: string
+                  title: Product instrument
+                productType:
+                  type: string
+                  title: Product type
+                sensorMode:
+                  type: string
+                  title: Sensor mode
+                processingLevel:
+                  type: string
+                  title: Processing level
+                polarisation:
+                  type: string
+                  title: Polarisation
+                swath:
+                  type: string
+                  title: Swath
+                thumbnail:
+                  type: string
+                  format: url
+                  title: Product thumbnail
+                quicklook:
+                  type: string
+                  format: url
+                  title: Product quicklook
+                productStartTime:
+                  type: string
+                  format: date-time
+                  title: Product start time
+                productEndTime:
+                  type: string
+                  format: date-time
+                  title: Product end time
+                orbitNumber:
+                  type: integer
+                  title: Orbit number
+                orbitDirection:
+                  type: string
+                  enum:
+                    - ASCENDING
+                    - DESCENDING
+          required:
+            - extraParams
+    CataloguePlatformProcessingOutputProduct:
+      type: object
+      title: Catalogue processing output product
+      description: Schema for `PLATFORM_PRODUCTS` catalogue product
+      allOf:
+        - $ref: '#/components/schemas/CataloguePlatformProductCommon'
+        - type: object
+          properties:
+            intJobId:
+              type: integer
+              title: Job ID
+              description: The ID of the job that produced the product
+            jobOwner:
+              type: string
+              title: Job owner
+              description: The user that launched the job
+            jobStartDate:
+              type: string
+              format: date-time
+              title: Job start date
+              description: The Job start date
+            jobEndDate:
+              type: string
+              format: date-time
+              title: Job end date
+              description: The Job end date
+            serviceName:
+              type: string
+              title: Service name
+              description: Name of the service that generated the product
+          required:
+            - intJobId
+            - jobOwner
+            - jobStartDate
+            - jobEndDate
+            - serviceName
+    CataloguePlatformProductCommon:
+      type: object
+      title: Catalogue platform product common metadata
+      allOf:
+        - $ref: '#/components/schemas/CatalogueProductBaseMetadata'
+        - type: object
+          properties:
+            collection:
+              type: string
+              title: Collection identifier
+            filename:
+              type: string
+              title: File name
+            owner:
+              type: string
+              title: Owner
+              description: The platform user that uploaded the file
+            title:
+              type: string
+              title: Product title
+            description:
+              type: string
+              title: Product description
+            published:
+              type: string
+              format: date-time
+              title: Publication date
+            extraParams:
+              type: object
+              title: Additional metadata
+              properties:
+                productStartTime:
+                  type: string
+                  format: date-time
+                  title: Product start time
+                productEndTime:
+                  type: string
+                  format: date-time
+                  title: Product end time
+            _links:
+              type: object
+              title: Product links
+              allOf:
+                - $ref: '#/components/schemas/PlatformFileOgcLinks'
+                - type: object
+                  properties:
+                    platformFile:
+                      type: object
+                      title: Platform file link
+                      properties:
+                        href:
+                          type: string
+                          format: uri
+                          pattern: ^https://insula.destine.eu/secure/api/v2\.0/search/products/platform/[0-9]+
+                          example: https://insula.destine.eu/secure/api/v2.0/search/products/platform/42
+                      required:
+                        - href
+                    download:
+                      type: object
+                      title: Download link
+                      properties:
+                        href:
+                          type: string
+                          format: uri
+                          pattern: ^https://insula.destine.eu/secure/api/v2\.0/search/dl/platform/[0-9]+
+                          example: https://insula.destine.eu/secure/api/v2.0/search/dl/platform/42
+                      required:
+                        - href
+          required:
+            - collection
+            - owner
+            - fileName
+            - published
+            - extraParams
+    CataloguePlatformReferenceDataCatalogueProduct:
+      type: object
+      title: Catalogue reference data product
+      description: Schema for `REF_DATA` catalogue product
+      allOf:
+        - $ref: '#/components/schemas/CataloguePlatformProductCommon'
+        - type: object
+          properties:
+            owner:
+              type: string
+              title: Owner
+              description: The platform user that uploaded the file
+          required:
+            - owner
+    CatalogueProduct:
+      type: object
+      title: Catalogue product metadata
+      properties:
+        id:
+          title: Record id
+          type: string
+          format: uuid
+        geometry:
+          $ref: '#/components/schemas/GeoJSONGeometry'
+        properties:
+          oneOf:
+            - $ref: '#/components/schemas/CatalogueCopernicusProduct'
+            - $ref: '#/components/schemas/CataloguePlatformProcessingOutputProduct'
+            - $ref: '#/components/schemas/CataloguePlatformReferenceDataCatalogueProduct'
+      required:
+        - id
+        - geometry
+        - properties
+    CatalogueProductBaseMetadata:
+      type: object
+      title: Catalogue product common metadata
+      properties:
+        productIdentifier:
+          type: string
+          title: Product identifier
+        platformUrl:
+          type: string
+          format: uri
+          title: Product URL
+          nullable: true
+          description: |-
+            The product internal URL. Shall be used as input for processings taking catalogue products as input.
+            If null the product cannot be used as input for processing.
+        productSource:
+          type: string
+          title: Product source
+        filesize:
+          type: number
+          title: Product file size in bytes
+      required:
+        - productIdentifier
+        - platformUrl
+    CatalogueSearchParameter:
+      type: object
+      title: Catalogue search parameter
+      oneOf:
+        - $ref: '#/components/schemas/CatalogueSearchParameterString'
+        - $ref: '#/components/schemas/CatalogueSearchParameterInt'
+        - $ref: '#/components/schemas/CatalogueSearchParameterSelect'
+        - $ref: '#/components/schemas/CatalogueSearchParameterDate'
+        - $ref: '#/components/schemas/CatalogueSearchParameterDateRange'
+        - $ref: '#/components/schemas/CatalogueSearchParameterPolygon'
+        - $ref: '#/components/schemas/CatalogueSearchParameterBbox'
+        - $ref: '#/components/schemas/CatalogueSearchParameterDynamic'
+    CatalogueSearchParameterBbox:
+      type: object
+      title: Catalogue bbox parameter
+      description: 'A bbox search parameter. Shall be sent as comma separated bbox corners in the form: `minLon,minLat,maxLon,maxLat`.'
+      allOf:
+        - $ref: '#/components/schemas/CatalogueSearchParameterCommonProps'
+        - type: object
+          properties:
+            type:
+              type: string
+              title: BBox type constant
+              enum:
+                - bbox
+          required:
+            - type
+    CatalogueSearchParameterCommonProps:
+      type: object
+      title: Catalogue search parameter common properties
+      properties:
+        title:
+          type: string
+          title: Parameter label
+        description:
+          type: string
+          title: Parameter description
+        onlyIf:
+          type: object
+          title: Dependency constraints
+          additionalProperties:
+            type: array
+            items:
+              type: string
+        required:
+          type: boolean
+          title: Required flag
+    CatalogueSearchParameterDate:
+      type: object
+      title: Catalogue date parameter
+      description: A date parameter. Shall be populated with an ISO8601 string.
+      allOf:
+        - $ref: '#/components/schemas/CatalogueSearchParameterCommonProps'
+        - type: object
+          properties:
+            type:
+              type: string
+              title: Date type constant
+              enum:
+                - date
+          required:
+            - type
+    CatalogueSearchParameterDateRange:
+      type: object
+      title: Catalogue date range parameter
+      description: Accept a pair of query parameter `[parameterID]Start` `[parameterID]End` in ISO 8601 format
+      allOf:
+        - $ref: '#/components/schemas/CatalogueSearchParameterCommonProps'
+        - type: object
+          properties:
+            type:
+              type: string
+              title: Date range type constant
+              enum:
+                - daterange
+          required:
+            - type
+    CatalogueSearchParameterDynamic:
+      type: object
+      title: Catalogue dynamic parameter
+      description: |-
+        A parameter of `select` type. To retrieve the list of allowed values a call to the
+        `search/parameter/{parameterName}` endpoint shall be made.
+      allOf:
+        - $ref: '#/components/schemas/CatalogueSearchParameterCommonProps'
+        - type: object
+          properties:
+            type:
+              type: string
+              title: Dynamic type constant
+              enum:
+                - dynamic
+          required:
+            - type
+    CatalogueSearchParameterInt:
+      type: object
+      title: Catalogue integer parameter
+      allOf:
+        - $ref: '#/components/schemas/CatalogueSearchParameterCommonProps'
+        - type: object
+          properties:
+            type:
+              type: string
+              title: Int type constant
+              enum:
+                - int
+            defaultValue:
+              type: integer
+          required:
+            - type
+    CatalogueSearchParameterPolygon:
+      type: object
+      title: Catalogue polygon parameter
+      description: A polygonal AOI parameter. Accept a WKT polygon string as value
+      allOf:
+        - $ref: '#/components/schemas/CatalogueSearchParameterCommonProps'
+        - type: object
+          properties:
+            type:
+              type: string
+              title: Polygon type constant
+              enum:
+                - polygon
+          required:
+            - type
+    CatalogueSearchParameterSelect:
+      type: object
+      title: Catalogue select parameter
+      allOf:
+        - $ref: '#/components/schemas/CatalogueSearchParameterCommonProps'
+        - type: object
+          properties:
+            type:
+              type: string
+              title: Select type constant
+              enum:
+                - select
+            allowed:
+              type: object
+              properties:
+                values:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      value:
+                        type: string
+                        title: Option value
+                        description: The option value. The value to use to populate the query parameter value
+                      title:
+                        type: string
+                        title: Option title
+                      description:
+                        type: string
+                        title: Option description
+                      parameterName:
+                        type: string
+                        title: Additional query parameters name
+                        description: |-
+                          When provided it means that the selected item offers additional search parameters, that can be
+                          retrieved from the `search/parameters/parameterName/{parameterName}` endpoint
+                    required:
+                      - value
+            defaultValue:
+              type: string
+          required:
+            - type
+            - allowed
+    CatalogueSearchParameterString:
+      type: object
+      title: Catalogue string parameter
+      allOf:
+        - $ref: '#/components/schemas/CatalogueSearchParameterCommonProps'
+        - type: object
+          properties:
+            type:
+              type: string
+              title: Text type constant
+              enum:
+                - text
+          required:
+            - type
+    CatalogueSearchParameters:
+      type: object
+      title: Catalogue search parameters
+      description: The available search parameters. Each key can be mapped to a query parameter of the same name.
+      additionalProperties:
+        $ref: '#/components/schemas/CatalogueSearchParameter'
+      example:
+        catalogue:
+          type: select
+          title: Catalogue
+          allowed:
+            values:
+              - value: SATELLITE
+                label: Open Data
+              - value: REF_DATA
+                label: Reference
+          required: true
+        identifier:
+          type: text
+          title: Identifier
+        aoi:
+          type: polygon
+          title: AOI
+    CatalogueSearchResults:
+      type: object
+      title: Catalogue search results
+      properties:
+        page:
+          $ref: '#/components/schemas/PagingState'
+        features:
+          type: array
+          items:
+            $ref: '#/components/schemas/CatalogueProduct'
+      required:
+        - page
+        - features
+    CollectionBaseMetadata:
+      type: object
+      title: Collection metadata
+      properties:
+        name:
+          title: Collection name
+          type: string
+        description:
+          title: Collection description
+          type: string
+        fileType:
+          $ref: '#/components/schemas/PlatformFileType'
+        productsType:
+          title: Collection product types
+          description: Define the type of products contained in the collections. A free text field that can be used for filtering in search
+          type: string
+      required:
+        - name
+        - fileType
+    CollectionCreateOrUpdateResponse:
+      type: object
+      title: Collection create/update response
+      allOf:
+        - $ref: '#/components/schemas/CollectionBaseMetadata'
+        - type: object
+          properties:
+            _links:
+              type: object
+              properties:
+                self:
+                  type: object
+                  title: Self link
+                  description: A link to the created resource
+                  properties:
+                    href:
+                      type: string
+                      format: uri
+                      pattern: ^https://insula.destine.eu/secure/api/v2\.0/collections/[0-9]+
+                      example: https://insula.destine.eu/secure/api/v2.0/collections/42
+                  required:
+                    - href
+              required:
+                - self
+            _embedded:
+              type: object
+              properties:
+                owner:
+                  $ref: '#/components/schemas/User'
+          required:
+            - _links
+            - _embedded
+    CollectionDetailedProjection:
+      type: object
+      title: Collection detailed projection
+      allOf:
+        - $ref: '#/components/schemas/CollectionShortProjection'
+        - type: object
+          properties:
+            size:
+              type: number
+              title: Collection size
+          required:
+            - size
+    CollectionSearchResults:
+      type: object
+      title: Collection search results
+      properties:
+        page:
+          $ref: '#/components/schemas/PagingState'
+        _embedded:
+          type: object
+          properties:
+            collections:
+              type: array
+              items:
+                oneOf:
+                  - $ref: '#/components/schemas/CollectionShortProjection'
+                  - $ref: '#/components/schemas/CollectionDetailedProjection'
+          required:
+            - collections
+      required:
+        - page
+        - _embedded
+    CollectionShortProjection:
+      type: object
+      title: Collection short projection
+      allOf:
+        - $ref: '#/components/schemas/CollectionBaseMetadata'
+        - type: object
+          properties:
+            id:
+              $ref: '#/components/schemas/PlatformIdentifier'
+            identifier:
+              type: string
+              format: uuid
+              title: Catalogue identifier
+              description: '-| The catalogue identifier. It should be used to populate the ''collection'' tag of the platformFiles/refData upload call'
+            owner:
+              $ref: '#/components/schemas/User'
+          required:
+            - id
+            - identifier
+            - owner
+    GeoJSONGeometry:
+      title: GeoJSON Geometry
+      oneOf:
+        - title: GeoJSON Point
+          type: object
+          required:
+            - type
+            - coordinates
+          properties:
+            type:
+              type: string
+              enum:
+                - Point
+            coordinates:
+              type: array
+              minItems: 2
+              items:
+                type: number
+            bbox:
+              type: array
+              minItems: 4
+              items:
+                type: number
+        - title: GeoJSON LineString
+          type: object
+          required:
+            - type
+            - coordinates
+          properties:
+            type:
+              type: string
+              enum:
+                - LineString
+            coordinates:
+              type: array
+              minItems: 2
+              items:
+                type: array
+                minItems: 2
+                items:
+                  type: number
+            bbox:
+              type: array
+              minItems: 4
+              items:
+                type: number
+        - title: GeoJSON Polygon
+          type: object
+          required:
+            - type
+            - coordinates
+          properties:
+            type:
+              type: string
+              enum:
+                - Polygon
+            coordinates:
+              type: array
+              items:
+                type: array
+                minItems: 4
+                items:
+                  type: array
+                  minItems: 2
+                  items:
+                    type: number
+            bbox:
+              type: array
+              minItems: 4
+              items:
+                type: number
+        - title: GeoJSON MultiPoint
+          type: object
+          required:
+            - type
+            - coordinates
+          properties:
+            type:
+              type: string
+              enum:
+                - MultiPoint
+            coordinates:
+              type: array
+              items:
+                type: array
+                minItems: 2
+                items:
+                  type: number
+            bbox:
+              type: array
+              minItems: 4
+              items:
+                type: number
+        - title: GeoJSON MultiLineString
+          type: object
+          required:
+            - type
+            - coordinates
+          properties:
+            type:
+              type: string
+              enum:
+                - MultiLineString
+            coordinates:
+              type: array
+              items:
+                type: array
+                minItems: 2
+                items:
+                  type: array
+                  minItems: 2
+                  items:
+                    type: number
+            bbox:
+              type: array
+              minItems: 4
+              items:
+                type: number
+        - title: GeoJSON MultiPolygon
+          type: object
+          required:
+            - type
+            - coordinates
+          properties:
+            type:
+              type: string
+              enum:
+                - MultiPolygon
+            coordinates:
+              type: array
+              items:
+                type: array
+                items:
+                  type: array
+                  minItems: 4
+                  items:
+                    type: array
+                    minItems: 2
+                    items:
+                      type: number
+            bbox:
+              type: array
+              minItems: 4
+              items:
+                type: number
+    JobBaseMetadata:
+      type: object
+      title: Job metadata
+      properties:
+        extId:
+          type: string
+        startTime:
+          type: string
+          format: date-time
+          title: Job start time
+        endTime:
+          type: string
+          format: date-time
+          title: Job end time
+        status:
+          $ref: '#/components/schemas/JobStatus'
+        queuePosition:
+          type: integer
+          title: Queue position
+        parent:
+          type: boolean
+          title: Parent flag
+          description: |-
+            If true, the job is a container of subjobs. It will remain in the 'CREATED' state until
+            all subjobs complete their execution
+        guiUrl:
+          type: string
+          format: uri
+          title: GUI URL
+          description: Available only for interactive applications. Provide a link to the remote application UI
+        stage:
+          type: string
+          title: Job stage
+          description: Job step as string
+        phase:
+          $ref: '#/components/schemas/JobStep'
+    JobConfig:
+      type: object
+      title: Job config
+      properties:
+        id:
+          $ref: '#/components/schemas/PlatformIdentifier'
+        inputs:
+          $ref: '#/components/schemas/JobConfigInputs'
+        label:
+          type: string
+        _embedded:
+          type: object
+          properties:
+            owner:
+              $ref: '#/components/schemas/User'
+            service:
+              $ref: '#/components/schemas/ServiceShortProjection'
+        _links:
+          type: object
+          properties:
+            self:
+              type: object
+              properties:
+                href:
+                  type: string
+                  format: uri
+                  pattern: ^https://insula.destine.eu/secure/api/v2\.0/jobConfigs/[0-9]+$
+      required:
+        - id
+        - inputs
+        - _embedded
+        - _links
+    JobConfigInputs:
+      type: object
+      title: Job processing inputs
+      properties:
+        collection:
+          type: array
+          title: Output collection
+          description: |-
+            Specifiy the output collection for each service output.
+            A stringified JSON KVP object where each entry is of the form `[OUTPUT_ID]:[COLLECTION_IDENTIFIER]`
+          items:
+            type: string
+          minItems: 1
+          maxItems: 1
+        geoServerSpec:
+          type: array
+          title: Geoserver ingestion specification
+          description: |-
+            Specify additional ingestion parameter for each service output.
+            A stringified JSON KVP object where each entry is of the form `[OUTPUT_ID]:[GEOSERVER_SPEC]`.
+            Only service output of type `GEOTIFF` and `SHAPEFILE`
+            should be listed here. Check `Job Geoserver ingestion specification` schema for the definition of
+            the `GEOSERVER_SPEC` object.
+            If not provided each `GEOTIFF` will be ingested into a new WMS layer, and each `SHAPEFILE` will be ingested
+            into a new WFS layer.
+          items:
+            type: string
+          minItems: 1
+          maxItems: 1
+      additionalProperties:
+        type: array
+        title: Processing input
+        description: A length one array containing the input value
+        items:
+          type: string
+        minItems: 1
+        maxItems: 1
+      example:
+        eoInput:
+          - eopaas://refData/33/input.tif
+        threshold:
+          - '0.22'
+        geoServerSpec:
+          - '{"rasterOutput": {"geoserverType": "MOSAIC", "dataStoreName": "MyMosaic", "coverageName": "MyMosaic", "workspace": "myWS"}, {"vectorOutput": {"geoserverType": "SHAPEFILE_POSTGIS_IMPORT", "layerName": "MyVectorData", "options": {"mode": "APPEND"}}}'
+        collection:
+          - '{"rasterOutput": "eopaas3d514c22f44e473d3sdeccb1ab54cfb5", "vectorOutput": "eopaas3d5129822f3ae473d3sdeddb1ab54cfb5"}'
+    JobConfigSearchResults:
+      type: object
+      title: Job config search results
+      properties:
+        page:
+          $ref: '#/components/schemas/PagingState'
+        _embedded:
+          type: object
+          properties:
+            jobConfigs:
+              type: array
+              items:
+                $ref: '#/components/schemas/JobConfig'
+          required:
+            - jobConfigs
+      required:
+        - page
+        - _embedded
+    JobDetailedProjection:
+      type: object
+      title: Job detailed projection
+      allOf:
+        - $ref: '#/components/schemas/JobShortProjection'
+        - type: object
+          properties:
+            config:
+              $ref: '#/components/schemas/JobConfig'
+            outputFIles:
+              type: array
+              items:
+                $ref: '#/components/schemas/PlatformFileShortProjection'
+          required:
+            - outputFIles
+    JobGeoserverSpecInput:
+      type: object
+      title: Job Geoserver ingestion specification
+      properties:
+        geoserverType:
+          type: string
+          title: Geoserver store type
+          description: |-
+            - SINGLE_COVERAGE: A WMS layer will be created for data visualization. Each output shall be of COG (Cloud Optimized Geotiff) type.
+            - MOSAIC: A time-enabled WMS layer will be created for data visualization. Each output shall be of COG (Cloud Optimized Geotiff) type.
+            Each file must include in its name the time in ISO 8601 basic format `YYYYMMDDThhmmssZ' (e.g. 20100101T000000Z ).
+            - SHAPEFILE_POSTGIS_IMPORT: A WFS layer will be created for data access and a WMS layer for visualization.
+            Each output shall be of `SHAPEFILE` type, that is a zip archive containing in the root folder the set of shapefile inputs
+            ('shp', 'dbf', 'shx' and 'prj' as a minimum).
+          enum:
+            - SINGLE_COVERAGE
+            - MOSAIC
+            - SHAPEFILE_POSTGIS_IMPORT
+        datastoreName:
+          type: string
+          title: Geoserver store name
+          description: The data store name. Shall be provided only for `MOSAIC` store type, to add new granules to a coverage in an existing datastore.
+        coverageName:
+          type: string
+          title: Geoserver coverage name
+          description: The geoserver coverage name. Shall be provided only for `MOSAIC` store type, to add new granules to an existing coverage.
+        layerName:
+          type: string
+          title: Geoserver layer name
+          description: |-
+            The geoserver layer name. Shall be provided for `SHAPEFILE_POSTGIS_IMPORT` store type, to add new data to an existing DB table.
+            The new inputs shall have the same schema as the existing table.
+        style:
+          type: string
+          title: Geoserver layer style
+        workspace:
+          type: string
+          title: Geoserver layer workspace. Shall be provided to add new data (e.g. raster granule or vector table) to an existing data store
+        options:
+          type: object
+          properties:
+            mode:
+              type: string
+              title: PostGIS ingestion mode
+              description: Specify how the data should be imported into the target PostGIS table. Valid only for Shapefile import
+              enum:
+                - CREATE
+                - APPEND
+                - REPLACE
+      required:
+        - geoserverType
+    JobLogs:
+      type: array
+      title: Job logs
+      items:
+        type: object
+        properties:
+          timestamp:
+            type: string
+            format: date-time
+          message:
+            type: string
+        required:
+          - timestamp
+          - message
+    JobPagelessSearchResults:
+      type: object
+      title: Job search results
+      properties:
+        _embedded:
+          type: object
+          properties:
+            jobs:
+              type: array
+              items:
+                oneOf:
+                  - $ref: '#/components/schemas/JobShortProjection'
+                  - $ref: '#/components/schemas/JobDetailedProjection'
+          required:
+            - jobs
+      required:
+        - _embedded
+    JobSearchResults:
+      type: object
+      title: Job search results
+      properties:
+        page:
+          $ref: '#/components/schemas/PagingState'
+        _embedded:
+          type: object
+          properties:
+            jobs:
+              type: array
+              items:
+                oneOf:
+                  - $ref: '#/components/schemas/JobShortProjection'
+                  - $ref: '#/components/schemas/JobDetailedProjection'
+          required:
+            - jobs
+      required:
+        - page
+        - _embedded
+    JobShortProjection:
+      type: object
+      title: Job short projection
+      allOf:
+        - $ref: '#/components/schemas/JobBaseMetadata'
+        - type: object
+          properties:
+            id:
+              $ref: '#/components/schemas/PlatformIdentifier'
+            owner:
+              $ref: '#/components/schemas/User'
+            serviceName:
+              type: string
+              title: Service name
+              description: The processing service name
+            label:
+              type: string
+              title: Job label
+            systematicParameter:
+              type: string
+              title: Systematic parameter
+              description: For systematic processing only.
+          required:
+            - id
+            - owner
+            - serviceName
+    JobStatus:
+      type: string
+      title: Job status
+      description: |-
+        The processing job status.
+        - CREATED: Job succesfully created.
+        - PENDING: Job queued.
+        - RUNNING: Job running.
+        - COMPLETED: Job succesfully completed
+        - ERROR: Job failed
+        - CANCELLED: Job canceled by the user
+        - WAITING: Job waiting for execution
+      enum:
+        - CREATED
+        - PENDING
+        - RUNNING
+        - COMPLETED
+        - ERROR
+        - CANCELLED
+        - WAITING
+        - CONDITION_WAIT
+    JobStep:
+      type: string
+      title: Job step
+      description: |-
+        The processing job running step.
+        - CREATED: Job created
+        - DATA_FETCH: Fetching input data
+        - PROCESSING: Processing running
+        - OUTPUT_LIST: Ingesting outputs
+      enum:
+        - CREATED
+        - DATA_FETCH
+        - PROCESSING
+        - OUTPUT_LIST
+    PagingState:
+      type: object
+      title: Search pagination state
+      description: test desc
+      properties:
+        number:
+          type: number
+          title: Current page number
+        size:
+          type: number
+          title: Page size
+        totalElements:
+          type: number
+          title: Total elements
+        totalPages:
+          type: number
+          title: Total pages
+      required:
+        - number
+        - size
+    PlatformFileBaseMetadata:
+      type: object
+      title: Platform file metadata
+      properties:
+        filename:
+          title: File name
+          type: string
+        restoId:
+          title: Catalogue identifier
+          type: string
+          format: uuid
+        type:
+          $ref: '#/components/schemas/PlatformFileType'
+      required:
+        - filename
+        - restoId
+        - type
+    PlatformFileCatalogueMetadata:
+      type: object
+      title: Platform file catalogue product metadata
+      properties:
+        id:
+          type: string
+          format: uuid
+          title: Catalogue id
+        geometry:
+          $ref: '#/components/schemas/GeoJSONGeometry'
+        properties:
+          type: object
+          properties:
+            title:
+              type: string
+              title: Product title
+            description:
+              type: string
+              title: Product description
+            published:
+              type: string
+              format: date-time
+              title: Publication date
+            startDate:
+              type: string
+              format: date-time
+              title: Product start date
+            completionDate:
+              type: string
+              format: date-time
+              title: Product end date
+            collection:
+              type: string
+              format: uuid
+              title: Parent collection identifier
+          additionalProperties: true
+      required:
+        - filename
+        - restoId
+        - type
+    PlatformFileDetailedProjection:
+      type: object
+      title: Platform file detailed projection
+      allOf:
+        - $ref: '#/components/schemas/PlatformFileShortProjection'
+        - type: object
+          properties:
+            metadata:
+              $ref: '#/components/schemas/PlatformFileCatalogueMetadata'
+            uri:
+              type: string
+              format: uri
+              title: Platform file uri
+              description: The platform file uri. Use this as input of processing jobs
+            _links:
+              $ref: '#/components/schemas/PlatformFileHalLinks'
+    PlatformFileHalLinks:
+      allOf:
+        - $ref: '#/components/schemas/PlatformFileOgcLinks'
+        - type: object
+          title: Platform file HAL links
+          properties:
+            self:
+              type: object
+              title: Self link
+              description: A link to the created resource
+              properties:
+                href:
+                  type: string
+                  format: uri
+                  pattern: ^https://insula.destine.eu/secure/api/v2\.0/platformFiles/[0-9]+
+                  example: https://insula.destine.eu/secure/api/v2.0/platformFiles/42
+              required:
+                - href
+            download:
+              type: object
+              title: Download link
+              properties:
+                href:
+                  type: string
+                  format: uri
+                  pattern: ^https://insula.destine.eu/secure/api/v2\.0/platformFiles/[0-9]+/dl
+                  example: https://insula.destine.eu/secure/api/v2.0/platformFiles/42/dl
+              required:
+                - href
+          required:
+            - self
+    PlatformFileOgcLinks:
+      type: object
+      title: Platform file OGC links
+      properties:
+        wms:
+          type: object
+          title: WMS link
+          description: |-
+            A link to a WMS layer associated with the file. Only available for products linked
+            to a WMS visualization
+          properties:
+            href:
+              type: string
+              format: uri
+              example: https://geoserver.insula.destine.eu/geoserver/wms?version=1.1.0&layers=layerName
+          required:
+            - href
+        wfs:
+          type: object
+          title: WFS link
+          description: |-
+            A link to a WFS layer associated with the file. Only available for products linked
+            to a WFS layer
+          properties:
+            href:
+              type: string
+              format: uri
+              example: https://geoserver.insula.destine.eu/geoserver/wfs?version=1.0.0&typeName=layerName
+          required:
+            - href
+    PlatformFilePagelessSearchResults:
+      type: object
+      title: Platform file pageless search results
+      properties:
+        _embedded:
+          type: object
+          properties:
+            platformFiles:
+              oneOf:
+                - type: array
+                  items:
+                    $ref: '#/components/schemas/PlatformFileShortProjection'
+                - type: array
+                  items:
+                    $ref: '#/components/schemas/PlatformFileDetailedProjection'
+          required:
+            - platformFiles
+      required:
+        - _embedded
+    PlatformFileSearchResults:
+      type: object
+      title: Platform file search results
+      properties:
+        page:
+          $ref: '#/components/schemas/PagingState'
+        _embedded:
+          type: object
+          properties:
+            platformFiles:
+              type: array
+              items:
+                oneOf:
+                  - $ref: '#/components/schemas/PlatformFileShortProjection'
+                  - $ref: '#/components/schemas/PlatformFileDetailedProjection'
+          required:
+            - platformFiles
+      required:
+        - page
+        - _embedded
+    PlatformFileShortProjection:
+      type: object
+      title: Platform file short projection
+      allOf:
+        - $ref: '#/components/schemas/PlatformFileBaseMetadata'
+        - type: object
+          properties:
+            id:
+              $ref: '#/components/schemas/PlatformIdentifier'
+            owner:
+              $ref: '#/components/schemas/User'
+          required:
+            - id
+            - owner
+    PlatformFileType:
+      type: string
+      title: Platform file type
+      description: |-
+        The platform file type.
+        - REFERENCE_DATA indicates user uploaded data.
+        - OUTPUT_PRODUCT indicates processing outputs.
+      enum:
+        - REFERENCE_DATA
+        - OUTPUT_PRODUCT
+        - EXTERNAL_PRODUCT
+        - REMOTE_DATA
+    PlatformFileUploadFileType:
+      type: string
+      title: Platform file upload type
+      description: |-
+        The upload file type.
+        - GEOTIFF: Geotiff file. It shall be in COG (Cloud Optimized Geotiff) format. A WMS layer will be created for data visualization.
+        - SHAPEFILE: Shapefile. The file shall be a zip archive containing
+        in the root folder the set of shapefile inputs
+        ('shp', 'dbf', 'shx' and 'prj' as a minimum). A WFS layer will be created
+        allowing access to the underlying data, and a WMS layer for its visualization.
+        - MOSAIC: Geotiff mosaic. The product shall be in COG (Cloud Optimized Geotiff) format and 
+        will be added to a time-enabled raster coverage (WMS layer).
+        The filename must include the time in ISO 8601 basic format `YYYYMMDDThhmmssZ' (e.g. 20100101T000000Z ).
+        All files of the collection will be ingested in the same raster coverage (WMS layer) and shall have the same bands configuration.
+        - OTHER: Other file type. It won't be associated to any visualization
+      enum:
+        - GEOTIFF
+        - SHAPEFILE
+        - MOSAIC
+        - OTHER
+    PlatformFileUploadRequest:
+      type: object
+      title: Platform file upload request
+      properties:
+        collection:
+          type: string
+          format: uuid
+          description: the target collection catalogue identifier (i.e. the 'identifier' field in Collection metadata)
+        fileType:
+          $ref: '#/components/schemas/PlatformFileUploadFileType'
+        file:
+          type: string
+          format: binary
+          description: The file content
+        userProperties:
+          type: object
+          description: Additional metadata
+          properties:
+            title:
+              type: string
+            description:
+              type: string
+            startTime:
+              type: string
+              format: date-time
+            endTime:
+              type: string
+              format: date-time
+            geometry:
+              type: string
+              format: wkt
+              description: A geometry in WKT format
+          example:
+            title: My data
+            description: My data description
+            startTime: '2019-12-12T00:00:00Z'
+            geometry: POLYGON ((113.48358372937817 37.31542162503051, 113.2927493632424 36.97085957506315, 113.61610759475023 36.49907461433861, 114.15150401085336 36.63689943432556, 114.02428110009618 37.18819871427333, 113.48358372937817 37.31542162503051))
+      required:
+        - collection
+        - fileType
+        - file
+    PlatformFileUploadResponse:
+      type: object
+      title: Platform file upload response
+      description: Platform file metadata. Any data access link (e.g. WMS and/or WFS) will be available under the '_links' object
+      properties:
+        platformFile:
+          allOf:
+            - $ref: '#/components/schemas/PlatformFileBaseMetadata'
+            - type: object
+              properties:
+                id:
+                  $ref: '#/components/schemas/PlatformIdentifier'
+                fileSize:
+                  type: integer
+                  title: File size
+                  description: File size in bytes
+                uri:
+                  type: string
+                  format: uri
+                  title: Platform uri
+                  description: The platform file uri. Use this as input of processing jobs
+        statusMessage:
+          type: string
+          title: Status message
+        _links:
+          $ref: '#/components/schemas/PlatformFileHalLinks'
+      required:
+        - platformFile
+        - _links
+    PlatformIdentifier:
+      type: integer
+      title: Platform identifier
+      minimum: 1
+    ServiceLicence:
+      type: string
+      title: Service license
+      description: The Service license.
+      enum:
+        - OPEN
+        - RESTRICTED
+    ServiceShortProjection:
+      type: object
+      title: Service short projection
+      properties:
+        id:
+          $ref: '#/components/schemas/PlatformIdentifier'
+        name:
+          type: string
+          title: Service name
+        description:
+          type: string
+          title: Service description
+        type:
+          $ref: '#/components/schemas/ServiceType'
+        licence:
+          $ref: '#/components/schemas/ServiceLicence'
+        status:
+          $ref: '#/components/schemas/ServiceStatus'
+        dockerTag:
+          type: string
+          title: Service docker tag
+        owner:
+          $ref: '#/components/schemas/User'
+    ServiceStatus:
+      type: string
+      title: Service status
+      description: The Service status.
+      enum:
+        - IN_DEVELOPMENT
+        - AVAILABLE
+        - DISABLED
+    ServiceType:
+      type: string
+      title: Service type
+      description: |-
+        The Service type.
+        - PROCESSOR: A standard processing job.
+        - PARALLEL_PROCESSOR: A processing job that can process multiple inputs in parallel.
+        That is, a job instance will be executed for each of the values provided as input.
+        - APPLICATION: An interactive application. Launch a GUI application and provides remote access
+        to it
+      enum:
+        - PROCESSOR
+        - PARALLEL_PROCESSOR
+        - APPLICATION
+    User:
+      type: object
+      title: User
+      properties:
+        id:
+          $ref: '#/components/schemas/PlatformIdentifier'
+        name:
+          type: string
+        role:
+          $ref: '#/components/schemas/UserRole'
+    UserRole:
+      type: string
+      title: User role
+      enum:
+        - GUEST
+        - USER
+        - EXPERT_USER
+        - CONTENT_AUTHORITY
+        - ADMIN
+  securitySchemes:
+    oauth2Password:
+      type: oauth2
+      flows:
+        password:
+          tokenUrl: https://auth.destine.eu/realms/desp/protocol/openid-connect/token
+          scopes:
+            openid: api access
+  parameters:
+    collectionProjectionParam:
+      in: query
+      name: projection
+      description: The collection projection. Determines the schema of the search results
+      required: false
+      schema:
+        type: string
+        default: shortCollection
+        enum:
+          - shortCollection
+          - detailedCollection
+    jobProjectionParam:
+      in: query
+      name: projection
+      description: The job projection. Determines the schema of the search results
+      required: false
+      schema:
+        type: string
+        default: shortJob
+        enum:
+          - shortJob
+          - detailedJob
+    notOwnerParam:
+      in: query
+      name: notOwner
+      required: false
+      description: Show all resources not owned by a user. Must be provided as a reference uri in the form of https://insula.destine.eu/secure/api/v2.0/users/{userId}
+      schema:
+        type: string
+        format: uri-template
+        pattern: ^https://insula.destine.eu/secure/api/v2\.0/users/[0-9]+$
+    ownerParam:
+      in: query
+      name: owner
+      required: false
+      description: The owner of the resource. Must be provided as a reference uri in the form of https://insula.destine.eu/secure/api/v2.0/users/{userId}
+      schema:
+        type: string
+        title: Resource owner
+        format: uri
+        pattern: ^https://insula.destine.eu/secure/api/v2\.0/users/[0-9]+$
+    pageNumberParam:
+      in: query
+      name: page
+      required: false
+      schema:
+        type: integer
+        minimum: 0
+        default: 0
+      description: The pagination page number.
+    pageSizeParam:
+      in: query
+      name: size
+      required: false
+      schema:
+        type: integer
+        minimum: 0
+        default: 20
+      description: The number of items per page.
+    platformFileProjectionParam:
+      in: query
+      name: projection
+      description: The platform file output projection. Determines the schema of the search results
+      required: false
+      schema:
+        type: string
+        default: shortPlatformFile
+        enum:
+          - shortPlatformFile
+          - detailedPlatformFile
+    sortParam:
+      in: query
+      name: sort
+      required: false
+      schema:
+        type: string
+        pattern: ^[a-zA-Z]+(,(asc|desc))?$
+      description: The query sort parameter. It should be provided as the parameter name to sort by, optionally followed by a comma and the 'asc' or 'desc' keyword
+  responses:
+    BadRequest:
+      description: Bad request
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              timestamp:
+                type: string
+                format: date-time
+              status:
+                type: integer
+              error:
+                type: string
+              path:
+                type: string
+          example:
+            timestamp: '1982-03-02T00:00:00Z'
+            status: 400
+            error: Bad request
+            path: /secure/api/v2.0/users
+    InternalError:
+      description: Internal server error
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              timestamp:
+                type: string
+                format: date-time
+              status:
+                type: integer
+              error:
+                type: string
+              path:
+                type: string
+          example:
+            timestamp: '1982-03-02T00:00:00Z'
+            status: 500
+            error: Internal server error
+            path: /secure/api/v2.0/users
+    NotFound:
+      description: The specified resource was not found
+    Unauthorized:
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            type: object
+            title: Error response
+            properties:
+              status_code:
+                type: integer
+              status:
+                type: string
+            required:
+              - status
+          example:
+            status_code: 401
+            status: Unauthorized
