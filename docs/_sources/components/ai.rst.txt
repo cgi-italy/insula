@@ -1,0 +1,12 @@
+
+.. _insula_ai:
+
+Insula AI
+=========
+
+Insula AI is an advanced machine learning component built on Kubeflow, designed to streamline the deployment, scaling, and management of AI workflows. Currently in its beta phase, Insula AI brings cutting-edge capabilities to Insula instances (see :ref:`insula_instances`), enabling seamless integration of Kubeflow's powerful features with Insula's robust ecosystem.
+
+Stay tuned as we rapidly evolve Insula AI to support more use cases and enhance its functionality across diverse Insula environments!
+
+.. image:: ../images/insula_ai_1.png
+   :alt: Insula AI welcome page
