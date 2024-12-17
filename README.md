@@ -8,6 +8,10 @@ Below is a summary of its contents and their purposes.
 
 Comprehensive [documentation](docs/index.html) for the Insula services and tools.
 
+## Sample Jupyter Notebooks
+
+A set of [Jupyter Notebooks](https://github.com/cgi-italy/notebooks) showing the usage of Insula's APIs.
+
 ## OpenAPI Specification Documents
 
 [OpenAPI specifications](apis/index.md) of the Insula APIs. These documents include details about endpoints, request and response structures, and other necessary information for API consumers.
