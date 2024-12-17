@@ -1,3 +1,5 @@
+.. _getting_started:
+
 Getting Started
 ===============
 
@@ -9,7 +11,8 @@ Insula can be accessed at `<base_url>` (see :ref:`base_urls`).
 Upon accessing one of these URLs, a form similar to the following will be displayed. Type your access credentials and press the **Sign In** button.
 
 .. image:: images/getting_started_login.png
-   :alt: DESP Login
+   :alt: Insula Login
+   :width: 50%
 
 Insula Perception
 ++++++++++++++++++
@@ -21,16 +24,24 @@ After entering your credentials and signing in, you will see a page similar to:
 .. image:: images/getting_started_perception_landing.png
    :alt: Insula landing page
 
-Insula Code Lab
-+++++++++++++++
+Insula Experiment
++++++++++++++++++
 
-Insula Code Lab is accessible by clicking the "Code" button in the Other Application menu on the top right corner:
+Insula Experiment is accessible by clicking the "Code" button in the Other Application menu on the top right corner:
 
 .. image:: images/getting_started_code_menu_1.png
    :alt: Code Lab Menu
-   :width: 30%
+   :width: 25%
 
-After entering your credentials and signing in, you will see a message similar to:
+After entering your credentials and signing in, you will see a manu similar to:
+
+.. image:: images/getting_started_code_menu_2.png
+   :alt: Code Lab Menu
+   :width: 40%
+
+*The exact set of options depends on the Insula's instance you are using.*
+
+After selecting the preferred option, you will see a message similar to:
 
 .. image:: images/getting_started_code_landing_1.png
    :alt: Code Lab landing page
