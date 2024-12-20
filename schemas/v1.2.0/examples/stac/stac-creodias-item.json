@@ -1,0 +1,89 @@
+{
+  "bbox": [10.0, 20.0, 30.0, 40.0],
+  "properties": {
+    "providers": [
+      {
+        "name": "ESA"
+      }
+    ],
+    "sar:polarizations": ["HH&HW"],
+    "sar:beam_ids": ["EW"],
+    "view:sun_elevation": 10,
+    "view:sun_azimuth": 17.5,
+    "sat:orbit_cycle": 2,
+    "sat:relative_orbit": 51,
+    "proj:centroid": {
+      "coordinates": [110.138561062, -7.81237897]
+    },
+    "description": "The Copernicus Sentinel-2 mission",
+    "product:type": "S2MSI1C",
+    "title": "S2A_MSIL1C_20150904T105046_N0500_R051_T31VED_20231009T083312.SAFE",
+    "platform": "S2A",
+    "datetime": "2015-09-04T10:50:46.027000Z/2015-09-04T10:50:46.027000Z",
+    "eo:snow_cover": 0.0,
+    "instruments": ["MSI"],
+    "insula:productIdentifier": "S2A_MSIL1C_20150904T105046_N0500_R051_T31VED_20231009T083312.SAFE",
+    "eo:cloud_cover": 0.0,
+    "insula:catalogueSpecificProperties": {
+      "extraParams": {
+        "productIdentifier": "/eodata/Sentinel-2/MSI/L1C_N0500/2015/09/04/S2A_MSIL1C_20150904T105046_N0500_R051_T31VED_20231009T083312.SAFE"
+      }
+    },
+    "processing:level": "S2MSI1C",
+    "processing:version": 5.0,
+    "created": "2024-05-22T11:45:41.941794Z",
+    "license": "unlicensed",
+    "mission": "GS2A_20150904T105046_001049_N05.00",
+    "sar:instrument_mode": "INS-NOBS",
+    "raster:spatial_resolution": 0,
+    "updated": "2024-05-22T11:45:41.941794Z",
+    "sat:absolute_orbit": 1049,
+    "file:size": 67841232,
+    "insula:collection": "SENTINEL-2",
+    "product:timeliness": 50
+  },
+  "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+      [
+        [10.0, 10.0],
+        [20.0, 20.0],
+        [30.0, 30.0],
+        [40.0, 40.0]
+      ]
+    ]
+  },
+  "assets": {
+    "internal": {
+      "href": "sentinel2:///S2A_MSIL1C_20150904T105046_N0500_R051_T31VED_20231009T083312.SAFE",
+      "type": "application/octet-stream",
+      "roles": ["data"],
+      "description": "Downloadable for asset d3eef4b8-32c6-43ba-83ee-1235a8180e52",
+      "file:size": 67841232
+    },
+    "thumbnail": {
+      "href": "https://catalog.thumbnail",
+      "title": "thumbnail",
+      "type": "image/png",
+      "roles": ["thumbnail"],
+      "description": "Thumbnail for asset d3eef4b8-32c6-43ba-83ee-1235a8180e52"
+    }
+  },
+  "id": "d3eef4b8-32c6-43ba-83ee-1235a8180e52",
+  "type": "Feature",
+  "stac_version": "1.0.0",
+  "stac_extensions": [
+    "https://stac-extensions.github.io/file/v2.1.0/schema.json",
+    "https://stac-extensions.github.io/sar/v1.0.0/schema.json",
+    "https://stac-extensions.github.io/projection/v1.1.0/schema.json",
+    "https://stac-extensions.github.io/sat/v1.0.0/schema.json",
+    "https://stac-extensions.github.io/eo/v1.1.0/schema.json",
+    "https://stac-extensions.github.io/view/v1.0.0/schema.json",
+    "https://stac-extensions.github.io/product/v0.1.0/schema.json",
+    "https://stac-extensions.github.io/processing/v1.2.0/schema.json",
+    "https://stac-extensions.github.io/authentication/v1.1.0/schema.json",
+    "https://stac-extensions.github.io/raster/v2.0.0/schema.json",
+    "https://insula.earth/schemas/v1.2.0/stac/insula-stac-extension.schema.json"
+  ],
+  "links": []
+}

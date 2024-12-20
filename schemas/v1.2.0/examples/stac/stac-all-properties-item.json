@@ -1,0 +1,78 @@
+{
+  "properties": {
+    "insula:serviceName": "insulaServiceName",
+    "sat:relative_orbit": 18,
+    "proj:centroid": "centroid",
+    "processing:facility": "processingFacility",
+    "description": "description",
+    "product:type": "productType",
+    "title": "title",
+    "platform": "platform",
+    "insula:platformFileType": "EXTERNAL_PRODUCT",
+    "view:sun_elevation": 15,
+    "eo:snow_cover": 17,
+    "instruments": ["instrument"],
+    "constellation": "constellation",
+    "product:timeliness": 13,
+    "sat:orbit_state": "orbitState",
+    "insula:productIdentifier": "insulaProductIdentifier",
+    "insula:jobStartDate": "2020-01-01T00:00:00Z",
+    "eo:cloud_cover": 11,
+    "insula:filename": "insulaFileName",
+    "insula:owner": "owner",
+    "insula:platformparam": "platformparam",
+    "sar:beam_ids": ["swath"],
+    "insula:jobId": "insulaJobId",
+    "insula:catalogueSpecificProperties": {
+      "cataloguePropertyKey": "cataloguePropertyValue"
+    },
+    "processing:level": "processingLevel",
+    "proj:code": "epsg",
+    "sat:orbit_cycle": 20,
+    "created": "created",
+    "processing:version": 19,
+    "view:sun_azimuth": 14,
+    "insula:intJobId": 21,
+    "auth:schemes": "schemes",
+    "sar:polarizations": ["polarization"],
+    "insula:jobOwner": "insulaJobOwner",
+    "insula:jobEndDate": "2020-01-01T10:00:00Z",
+    "license": "license",
+    "sar:instrument_mode": "instrumentMode",
+    "mission": "mission",
+    "file:local_path": "fileLocalPath",
+    "raster:spatial_resolution": 16,
+    "sar:product_type": "sarProductType",
+    "updated": "updated",
+    "sat:absolute_orbit": 10,
+    "file:size": 12,
+    "providers": [
+      {
+        "name": "provider"
+      }
+    ],
+    "insula:collection": "insulaCollection"
+  },
+  "geometry": {
+    "type": "Polygon",
+    "coordinates": [[[10.0, 20.0, 30.0, 40.0]]]
+  },
+  "id": "id",
+  "assets": {},
+  "type": "Feature",
+  "links": [],
+  "stac_version": "1.0.0",
+  "stac_extensions": [
+    "https://stac-extensions.github.io/file/v2.1.0/schema.json",
+    "https://stac-extensions.github.io/sar/v1.0.0/schema.json",
+    "https://stac-extensions.github.io/projection/v1.1.0/schema.json",
+    "https://stac-extensions.github.io/sat/v1.0.0/schema.json",
+    "https://stac-extensions.github.io/eo/v1.1.0/schema.json",
+    "https://stac-extensions.github.io/view/v1.0.0/schema.json",
+    "https://stac-extensions.github.io/product/v0.1.0/schema.json",
+    "https://stac-extensions.github.io/processing/v1.2.0/schema.json",
+    "https://stac-extensions.github.io/authentication/v1.1.0/schema.json",
+    "https://stac-extensions.github.io/raster/v2.0.0/schema.json",
+    "https://insula.earth/schemas/v1.2.0/stac/insula-stac-extension.schema.json"
+  ]
+}

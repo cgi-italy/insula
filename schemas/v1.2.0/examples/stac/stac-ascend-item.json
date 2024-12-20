@@ -1,0 +1,89 @@
+{
+  "bbox": [10.0, 20.0, 30.0, 40.0],
+  "properties": {
+    "processing:facility": "Astrium Services",
+    "view:sun_azimuth": 144.5102887,
+    "product:type": "KO2_MSC_2F",
+    "title": "KO2_OTPF_KO2_MSC_2F_20091108T031830_20091108T031830_017512_E098_N024",
+    "platform": "KOMPSAT-2",
+    "auth:schemes": {
+      "s3": {
+        "type": "s3"
+      },
+      "oidc": {
+        "openIdConnectUrl": "https://iam.ascend/",
+        "type": "openIdConnect"
+      }
+    },
+    "proj:code": "EPSG:4326",
+    "view:sun_elevation": 37.926639,
+    "datetime": "2009-11-08T03:18:30Z/2009-11-08T03:18:30Z",
+    "sar:instrument_mode": "MS",
+    "instruments": ["MSC"],
+    "constellation": "KOMPSAT-2",
+    "sat:orbit_state": "DESCENDING",
+    "sar:product_type": "KO2_MSC_2F",
+    "insula:productIdentifier": "KO2_OTPF_KO2_MSC_2F_20091108T031830_20091108T031830_017512_E098_N024",
+    "eo:cloud_cover": 0,
+    "updated": "2024-10-11T09:35:47Z",
+    "sat:absolute_orbit": 17512,
+    "file:size": 84920655,
+    "insula:collection": "tropforest_"
+  },
+  "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+      [
+        [10.0, 10.0],
+        [20.0, 20.0],
+        [30.0, 30.0],
+        [40.0, 40.0]
+      ]
+    ]
+  },
+  "assets": {
+    "internal": {
+      "href": "s3://data-access-01/TropForest_/",
+      "title": "KO2_OTPF_KO2_MSC_2F_20091108T031830_20091108T031830_017512_E098_N024",
+      "type": "application/octet-stream",
+      "roles": ["data"],
+      "description": "Downloadable for asset KO2_OTPF_KO2_MSC_2F_20091108T031830_20091108T031830_017512_E098_N024",
+      "file:size": 84920655
+    },
+    "thumbnail": {
+      "href": "https://catalog.thumbnail/",
+      "title": "thumbnail",
+      "type": "image/png",
+      "roles": ["thumbnail"],
+      "description": "Thumbnail for asset KO2_OTPF_KO2_MSC_2F_20091108T031830_20091108T031830_017512_E098_N024"
+    }
+  },
+  "id": "KO2_OTPF_KO2_MSC_2F_20091108T031830_20091108T031830_017512_E098_N024",
+  "type": "Feature",
+  "links": [
+    {
+      "title": "self",
+      "rel": "self",
+      "href": "href"
+    },
+    {
+      "title": "quicklook",
+      "rel": "quicklook",
+      "href": "href"
+    }
+  ],
+  "stac_version": "1.0.0",
+  "stac_extensions": [
+    "https://stac-extensions.github.io/file/v2.1.0/schema.json",
+    "https://stac-extensions.github.io/sar/v1.0.0/schema.json",
+    "https://stac-extensions.github.io/projection/v1.1.0/schema.json",
+    "https://stac-extensions.github.io/sat/v1.0.0/schema.json",
+    "https://stac-extensions.github.io/eo/v1.1.0/schema.json",
+    "https://stac-extensions.github.io/view/v1.0.0/schema.json",
+    "https://stac-extensions.github.io/product/v0.1.0/schema.json",
+    "https://stac-extensions.github.io/processing/v1.2.0/schema.json",
+    "https://stac-extensions.github.io/authentication/v1.1.0/schema.json",
+    "https://stac-extensions.github.io/raster/v2.0.0/schema.json",
+    "https://insula.earth/schemas/v1.2.0/stac/insula-stac-extension.schema.json"
+  ]
+}

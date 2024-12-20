@@ -1,0 +1,55 @@
+{
+  "bbox": [10.0, 20.0, 30.0, 40.0],
+  "properties": {
+    "insula:catalogueSpecificProperties": {
+      "location": "https://catalogue.dataspace.copernicus.eu/download/99d53830-0d23-4079-8727-446d445eb3a8"
+    },
+    "datetime": "2024-11-26T12:25:15Z/2024-11-26T12:35:15Z",
+    "file:local_path": "/eodata/Sentinel-3/SRAL/SR_1_SRA_A_/2024/11/26/S3A_SR_1_SRA_A__20241126T122515_20241126T123515_20241126T131507_0600_119_309______PS1_O_NR_005.SEN3",
+    "insula:productIdentifier": "S3A_SR_1_SRA",
+    "file:size": 508315434,
+    "insula:collection": "DATASPACE",
+    "providers": [
+      {
+        "name": "DATASPACE"
+      }
+    ]
+  },
+  "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+      [
+        [10.0, 10.0],
+        [20.0, 20.0],
+        [30.0, 30.0],
+        [40.0, 40.0]
+      ]
+    ]
+  },
+  "assets": {
+    "internal": {
+      "href": "desp://despCatalogue/EO:SPACE:DAT:SENTINEL-3/S3A_SR_1_SRA_A__20241126T122515_20241126T123515_20241126T131507_0600_119_309______PS1_O_NR_005.SEN3?location=https://catalogue.dataspace.copernicus.eu/download/99d53830-0d23-4079-8727-446d445eb3a8",
+      "type": "application/octet-stream",
+      "roles": ["data"],
+      "description": "Downloadable for asset S3A_SR_1_SRA",
+      "file:size": 508315434
+    }
+  },
+  "id": "S3A_SR_1_SRA",
+  "type": "Feature",
+  "stac_version": "1.0.0",
+  "stac_extensions": [
+    "https://stac-extensions.github.io/file/v2.1.0/schema.json",
+    "https://stac-extensions.github.io/sar/v1.0.0/schema.json",
+    "https://stac-extensions.github.io/projection/v1.1.0/schema.json",
+    "https://stac-extensions.github.io/sat/v1.0.0/schema.json",
+    "https://stac-extensions.github.io/eo/v1.1.0/schema.json",
+    "https://stac-extensions.github.io/view/v1.0.0/schema.json",
+    "https://stac-extensions.github.io/product/v0.1.0/schema.json",
+    "https://stac-extensions.github.io/processing/v1.2.0/schema.json",
+    "https://stac-extensions.github.io/authentication/v1.1.0/schema.json",
+    "https://stac-extensions.github.io/raster/v2.0.0/schema.json",
+    "https://insula.earth/schemas/v1.2.0/stac/insula-stac-extension.schema.json"
+  ],
+  "links": []
+}
