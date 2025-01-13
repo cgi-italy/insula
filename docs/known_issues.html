@@ -50,7 +50,12 @@
 <li class="toctree-l1"><a class="reference internal" href="api.html">APIs</a></li>
 <li class="toctree-l1"><a class="reference internal" href="faq.html">FAQs</a></li>
 <li class="toctree-l1"><a class="reference internal" href="instances.html">Instances</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Known Issues</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Known Issues</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#interactive-applications-sharing-does-not-work">Interactive Applications - Sharing does not work</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#interactive-applications-snap-input-file-issue">Interactive Applications - SNAP Input File Issue</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#interactive-applications-qgis-bsq-dataset-compatibility-issue">Interactive Applications - QGIS BSQ Dataset Compatibility Issue</a></li>
+</ul>
+</li>
 </ul>
 
         </div>
@@ -80,8 +85,29 @@
   <section id="known-issues">
 <span id="id1"></span><h1>Known Issues<a class="headerlink" href="#known-issues" title="Link to this heading"></a></h1>
 <p>While we strive to provide a seamless experience, there might be occasional hiccups. We’re constantly working on improvements, and we appreciate your patience.</p>
-<p>Currently, we do not have identified known issues.</p>
-<p>However, if you encounter any other unexpected behavior, please don’t hesitate to report it to our support team.</p>
+<p>Below is a list of identified known issues. However, if you encounter any other unexpected behaviour please don’t hesitate to report it to our support team at <a class="reference external" href="mailto:insula-ops&#46;it&#37;&#52;&#48;cgi&#46;com">insula-ops<span>&#46;</span>it<span>&#64;</span>cgi<span>&#46;</span>com</a>.</p>
+<section id="interactive-applications-sharing-does-not-work">
+<h2>Interactive Applications - Sharing does not work<a class="headerlink" href="#interactive-applications-sharing-does-not-work" title="Link to this heading"></a></h2>
+<p>Currently, Interactive Applications (see <a class="reference internal" href="components/intellect/process.html#intellect-service-type"><span class="std std-ref">Service Type</span></a>) cannot be shared. When a user shares an Interactive Application’s job with another user, this user will be able to see the job in the Insula Intellect monitoring page, but will not be able to access the interactive application itself, i.e. when clicking on the link provided by the job a 404 error will appear.</p>
+</section>
+<section id="interactive-applications-snap-input-file-issue">
+<h2>Interactive Applications - SNAP Input File Issue<a class="headerlink" href="#interactive-applications-snap-input-file-issue" title="Link to this heading"></a></h2>
+<p>SNAP requires files to be opened manually, rather than automatically detecting the input files. The issue arises from the inability of SNAP to open the input file directly based on the default settings or path detection logic.</p>
+<dl class="simple">
+<dt><strong>Workaround</strong>:</dt><dd><ul class="simple">
+<li><p>Open the input files manually in SNAP by navigating through the file menu:</p></li>
+<li><p>Navigate to <cite>File -&gt; Open Product</cite></p></li>
+<li><p>Locate the file at <cite>/home/worker/workDir/inDir/input</cite></p></li>
+</ul>
+</dd>
+</dl>
+</section>
+<section id="interactive-applications-qgis-bsq-dataset-compatibility-issue">
+<h2>Interactive Applications - QGIS BSQ Dataset Compatibility Issue<a class="headerlink" href="#interactive-applications-qgis-bsq-dataset-compatibility-issue" title="Link to this heading"></a></h2>
+<p>There is a compatibility issue with BSQ datasets when used in QGIS. The dataset requires two files (.bsq and .hdr) to reside in the same directory in order to work.
+However, the downloader used for acquiring these files creates separate folders for each file, resulting in QGIS being unable to read them due to their separation.</p>
+<p>There is no workaround at the moment.</p>
+</section>
 </section>
 
 
@@ -94,7 +120,7 @@
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright (&#39;2024&#39;, &#39;CGI Italy&#39;).</p>
+    <p>&#169; Copyright (&#39;2025&#39;, &#39;CGI Italy&#39;).</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a

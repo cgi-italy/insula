@@ -17,6 +17,8 @@ Explore the available services. You can:
 This is the list of services available for the user. In the example above, there is just one service, but they can be more. For this reason, there are some controls allow filtering and sorting.
 On the left-hand side, the *Service Type* and *Owner* allows filtering of the services based on these attributes. On the right-hand side, a control allows sorting by *Name* and *Service Type*. 
 
+.. _intellect_service_type:
+
 Service Type
 ************
 
