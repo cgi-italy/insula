@@ -85,6 +85,11 @@ Similarly to :ref:`processing_outputs`, these data is organized in collections, 
 * to download data from the collection,
 * to remove data from the collection.
 
+Restrictions on filenames:
+
+* any file with a valid Unix filename can be uploaded to Insula, except those containing the following characters: ", $, :, <, >
+* using these characters may lead to unexpected behavior during the file’s lifecycle.
+
 When uploading data, it is possible to define additional metadata to them, such as:
 
 * :ref:`filetype`
